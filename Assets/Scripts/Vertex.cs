@@ -3,39 +3,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 public class Vertex : MonoBehaviour {
-	public Text Distance;
+	//public Text Distance;
 	public int Index;
-	public List<Edge> EdgeTree;
-	public  int TreeIndex;
-	private Recorder record;
-	private Controller contr;
-	private Animator anim;
-	private bool isVertexChecked=false;
-	private int distance;
-	private Vertex closestVertex;
-	private Edge lastEdge;
-	private Edge nextEdge;
-	void Awake()
-	{
-		anim = GetComponent<Animator> ();
-		EdgeTree = new List<Edge> ();
-		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
-		contr = GameObject.FindGameObjectWithTag ("GameController").GetComponent<Controller>();
-	}
-	public void setIndex(int index)
-	{
-		Index = index;
-	}
+	//public List<Edge> EdgeTree;
+	//public  int TreeIndex;
+	//private Recorder record;
+	//private Controller contr;
+	//private Animator anim;
+	//private bool isVertexChecked=false;
+	//private int distance;
+	//private Vertex closestVertex;
+	//private Edge lastEdge;
+	//private Edge nextEdge;
 	public void Destroy()
 	{
+		/*/
 		foreach(Edge edge in EdgeTree)
 		{
 			edge.deleteEdge(this);
 		}
 		EdgeTree.Clear ();
+		/*/
 		Object.Destroy (gameObject);
 	}
-	
+	/*/
+	void Awake()
+	{
+		//anim = GetComponent<Animator> ();
+		//EdgeTree = new List<Edge> ();
+		//record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
+		//contr = GameObject.FindGameObjectWithTag ("GameController").GetComponent<Controller>();
+	}
+	/*/
+	public void setIndex(int index)
+	{
+		Index = index;
+	}
+	/*/
 	public void setColor(int i)
 	{
 		if(record.isCreateRecord())
@@ -150,5 +154,6 @@ public class Vertex : MonoBehaviour {
 	{
 		return nextEdge;
 	}
+	/*/
 
 }

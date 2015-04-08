@@ -18,6 +18,7 @@ public class Canvas : MonoBehaviour {
 		}
 		inScene (1, true);
 		inScene (3, true);
+		inScene (7,true);
 	}
 	public void Edit(int index)
 	{

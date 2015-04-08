@@ -42,14 +42,6 @@ public class Background : MonoBehaviour {
 			{
 			case State_of_Controller.Play:
 			{
-				if(algorithm.state==_NameAlgorithm.Floyd_Warshall)
-				{
-					algorithm.Floyd_Warshall_Set(_this_vertex);
-				}
-				if(algorithm.state==_NameAlgorithm.Johnson)
-				{
-					algorithm.Johnsonl_Set(_this_vertex);
-				}
 				break;
 			}
 			}
@@ -69,18 +61,18 @@ public class Background : MonoBehaviour {
 			{
 				if (Input.GetMouseButtonDown (0))
 					contr.Add(_this_vertex);
-				if(Input.GetMouseButtonDown(1))
+				if(Input.GetMouseButton(1))
 					contr.Delete_vertex(_this_vertex);
 				break;
 			}
 			case State_of_Controller.Pick:
 			{
-				contr.PickAction(_this_vertex);
+				//contr.PickAction(_this_vertex);
 				break;
 			}
 			case State_of_Controller._choseStartVertex:
 			{
-				contr.searchStartVertex(_this_vertex);
+				//contr.searchStartVertex(_this_vertex);
 				break;
 			}
 				/*/
@@ -104,7 +96,7 @@ public class Background : MonoBehaviour {
 			}
 			case State_of_Controller.Pick:
 			{
-				contr.PickAction();
+				//contr.PickAction();
 				break;
 			}
 			}
@@ -117,20 +109,10 @@ public class Background : MonoBehaviour {
 			{
 			case State_of_Controller.Edit:
 			{
-				if(Input.GetMouseButtonDown(0))
-				{
-					_this_edge.Edit();
-				}
-				if(Input.GetMouseButtonDown(1))
-				{
-					_this_edge.deleteEdge();
-					Destroy(this.gameObject);
-				}
 				break;
 			}
 			case State_of_Controller.Pick:
 			{
-				contr.PickAction();
 				break;
 			}
 			}

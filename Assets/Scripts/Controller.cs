@@ -61,39 +61,14 @@ public class Controller : MonoBehaviour {
 				_canvas.inScene(2,false);
 				_canvas.inScene(3,true);
 				GameObject[] edge= GameObject.FindGameObjectsWithTag("Edge");
-				for(int i=0;i<edge.Length;i++)
-				{
-					if(edge[i]!=null)
-						if(edge[i].GetComponent<Edge>()!=null)
-							if(edge[i].GetComponent<Edge>().weight!=null)
-								edge[i].GetComponent<Edge>().weight.setEdit(false);
-				}
 					break;
-				}
+			}
 		case State_of_Controller.Normal:
 			{
 				state = State_of_Controller.Edit;
-				//button_Chose.SetActive(true);
 				_canvas.inScene(0,true);
 				_canvas.inScene(2,true);
 				_canvas.inScene(3,false);
-				GameObject[] edge = GameObject.FindGameObjectsWithTag("Edge");
-				for(int i=0;i<edge.Length;i++)
-				{
-					if(edge[i]!=null)
-						if(edge[i].GetComponent<Edge>()!=null)
-							if(edge[i].GetComponent<Edge>().weight!=null)
-								edge[i].GetComponent<Edge>().weight.setEdit(true);
-				}
-				break;
-			}
-		case State_of_Controller.Pick:
-			{
-				foreach (Vertex _vertex in itemsformove)
-					_vertex.setColor (0);
-				itemsformove.Clear ();
-				//print ("PickAction removes:" + itemsformove.Count);
-				state = State_of_Controller.Normal;
 				break;
 			}
 		case State_of_Controller.Play:
@@ -105,23 +80,6 @@ public class Controller : MonoBehaviour {
 			_canvas.inScene(4,false);
 			_canvas.inScene(2,true);
 			_canvas.inScene(3,false);
-			GameObject[] edge= GameObject.FindGameObjectsWithTag("Edge");
-			foreach (Vertex vertex in vertexs) 
-			{
-				vertex.resetDistanse();
-			}
-			for(int i=0;i<edge.Length;i++)
-			{
-				if(edge[i]!=null)
-					if(edge[i].GetComponent<Edge>()!=null)
-						if(edge[i].GetComponent<Edge>().weight!=null)
-						{
-							edge[i].GetComponent<Edge>().weight.setEdit(true);
-							edge[i].GetComponent<Edge>().hideStreamField();
-							edge[i].GetComponent<Edge>().setColor(0,0);
-						}
-			}
-			_canvas.TimeToRecorder ();
 			break;
 		}
 		}
@@ -135,7 +93,6 @@ public class Controller : MonoBehaviour {
 		{
 			if(Input.GetButtonDown("Pick"))
 			{
-				//print("Start Pick Action");
 				state=State_of_Controller.Pick;
 			}
 			break;
@@ -144,44 +101,9 @@ public class Controller : MonoBehaviour {
 	}
 	void LateUpdate()
 	{
-
-		switch(state)
-		{
-		case State_of_Controller.Play:
-		{
-			break;
-		}
-		case State_of_Controller.Normal:
-		{
-			break;
-		}
-		case State_of_Controller.Edit:
-		{
-			if(Input.GetMouseButtonDown(0))
-			{
-				//Add();
-			}
-			else
-				if(Input.GetMouseButtonDown(1))
-				{
-					//Delete_vertex();
-				}
-
-			break;
-		}
-		case State_of_Controller.Pick:
-		{
-			//PickAction();
-			break;
-		}
-		case State_of_Controller._choseStartVertex:
-		{
-			//searchStartVertex();
-			break;
-		}
-		}
 	}
 	//==========================================Create_of_Destroy=function===============
+	//
 	int newIndex()
 	{
 		int index;
@@ -201,6 +123,7 @@ public class Controller : MonoBehaviour {
 		//print ("newIndex:"+index);
 		return index;
 	}
+	//
 	public Vector3 getMousePosition()
 	{
 		Vector3 position = Input.mousePosition;
@@ -235,110 +158,58 @@ public class Controller : MonoBehaviour {
 		//print (even.delta);
 		//return position;
 	}
+	//
 	public void Add(Vertex _vertex)
 	{
-		if(first_vertex==null)
-		{
-			first_vertex=_vertex;
-			first_vertex.setColor(Active_State);
-		}
-		else
-		{
-			if(first_vertex.Index==_vertex.Index)
-			{
-				first_vertex.setColor(0);
-				first_vertex=null;
-			}
-			else
-			{
-				if(first_vertex.getEdge(_vertex.Index)!=null)
-				{
-					first_vertex.setColor(0);
-					first_vertex=null;
-					return;
-				}
-				Edge edge=(Object.Instantiate(clone_of_Edge)as GameObject).GetComponent<Edge>();
-				edge.setVertexs(first_vertex.transform,_vertex.transform);
-				first_vertex.addEdge(edge);
-				_vertex.addEdge(edge);
-				first_vertex.setColor(0);
-				first_vertex=null;
-			}
-		}
 
 	}
+	//
 	public void Add()
 	{
-		/*/
-		Vector3 position = getMousePosition ();
-		bool Area_Empty=true;
 		Vertex _vertex;
-		foreach (Vertex vertex in vertexs) 
-		{
-			if(Vector3.Distance(vertex.gameObject.transform.position,position)<radius_of_Arey)
-			{
-				Area_Empty=false;
-				_vertex=vertex;
-				if(first_vertex==null)
-				{
-					first_vertex=_vertex;
-					first_vertex.setColor(1);
-				}
-				else
-				{
-					if(first_vertex==_vertex)
-					{
-						first_vertex.setColor(0);
-						first_vertex=null;
-					}
-					else
-					{
-						Edge edge=(Object.Instantiate(clone_of_Edge)as GameObject).GetComponent<Edge>();
-						edge.setVertexs(first_vertex.transform,vertex.transform);
-						first_vertex.addEdge(edge);
-						vertex.addEdge(edge);
-						first_vertex.setColor(0);
-						first_vertex=null;
-					}
-				}
-				break;
-			}
-		}
-		/*/
 		Vector3 position = getMousePosition ();
-		Vertex _vertex;
 		int index = newIndex ();
-		if (index == -1)
-			return;
 		_vertex = (Object.Instantiate (clone_of_Vertex, position, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
 		_vertex.setIndex (index);
 		vertexs.Add (_vertex);
 	}
+	public void Add(Vector3 position)
+	{
+		Vertex _vertex;
+		int index = newIndex ();
+		_vertex = (Object.Instantiate (clone_of_Vertex, position, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
+		_vertex.setIndex (index);
+		vertexs.Add (_vertex);
+	}
+	public void Add(List<Vector3> poss)
+	{
+		int index = 0;
+		Vertex _vertex;
+		foreach(Vector3 pos in poss)
+		{
+			index=newIndex();
+			_vertex = (Object.Instantiate (clone_of_Vertex, pos, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
+			_vertex.setIndex (index);
+			vertexs.Add (_vertex);
+		}
+	}
+
 	public void Delete_vertex(Vertex _vertex)
 	{
-		/*/
-		Vector3 position = getMousePosition ();
-		bool Area_Empty=true;
-		foreach (Vertex vertex in vertexs) 
-		{
-			if(Vector3.Distance(vertex.gameObject.transform.position,position)<radius_of_Arey)
-			{
-				Area_Empty=false;
-				_vertex=vertex;
-				//print("_vertex:"+_vertex.Index);
-				currendIndex.Enqueue(_vertex.Index);
-				vertexs.Remove(_vertex);
-				_vertex.Destroy();
-				break;
-			}
-		}
-		/*/
-		print ("Delete");
-		Vector3 position = getMousePosition ();
-		currendIndex.Enqueue(_vertex.Index);
+		//Vector3 position = getMousePosition ();
+//		currendIndex.Enqueue(_vertex.Index);
 		vertexs.Remove(_vertex);
 		_vertex.Destroy();
 	}
+	public void Delete_vertexs()
+	{
+		foreach(Vertex vertex in vertexs)
+		{
+			vertex.Destroy();
+		}
+		vertexs.Clear ();
+	}
+	/*/
 	public void PickAction()
 	{
 		if(!Input.GetButton("Pick"))
@@ -364,16 +235,17 @@ public class Controller : MonoBehaviour {
 		}
 
 	}
+	//
 	public void PickAction(Vertex _vertex)
 	{
 		//Vector3 position= getMousePosition ();
-		/*/
+		//
 		foreach (Vertex vertex in vertexs) 
 		{
 			if(Vector3.Distance(vertex.gameObject.transform.position,position)<radius_of_Arey)
 			{
 				//Area_Empty=false;
-		/*/
+		//
 				if(Input.GetButton("Pick"))
 				{
 					if(Input.GetMouseButtonDown(0))
@@ -426,7 +298,7 @@ public class Controller : MonoBehaviour {
 					}
 				}
 				return;
-		/*/
+		//
 			}
 		}
 		//
@@ -451,7 +323,7 @@ public class Controller : MonoBehaviour {
 					}
 				}
 			}
-		/*/
+		//
 	}
 	/*/
 	public void setAlgorithm(nameAlgorithm na)
@@ -472,12 +344,12 @@ public class Controller : MonoBehaviour {
 	public void searchStartVertex(Vertex vertex)
 	{
 		//Vector3 position= getMousePosition ();
-		/*/
+		//
 		foreach (Vertex vertex in vertexs) 
 		{
 			if(Vector3.Distance(vertex.gameObject.transform.position,position)<radius_of_Arey)
 			{
-		/*/
+		//
 				if(Input.GetMouseButtonDown(0))
 				{
 					if(!choseEndVertex)
@@ -507,27 +379,31 @@ public class Controller : MonoBehaviour {
 					}
 				}
 				return;
-		/*/
+		//
 			}
 		}
-		/*/
+		//
 	}
+	/*/
 	public void Play()
 	{
 		if (state != State_of_Controller.Normal)
 			return;
+		/*/
 		foreach (Vertex vertex in vertexs) 
 		{
 			vertex.unCheked();
 			vertex.AwakeTreeIndex();
 			vertex.resetDistanse();
 		}
+		/*/
 		recorder.StartCreate ();
 		state = State_of_Controller.Play;
 		_canvas.Edit (4, true);
 		_canvas.inScene(4,true);
 		_canvas.TimeToRecorder ();
 		algorightm.Start_Algoritghm ();
+		/*/
 		GameObject[] edge= GameObject.FindGameObjectsWithTag("Edge");
 		for(int i=0;i<edge.Length;i++)
 		{
@@ -542,6 +418,7 @@ public class Controller : MonoBehaviour {
 				}
 			}
 		}
+		/*/
 	}
 	public State_of_Controller getState()
 	{
@@ -557,6 +434,20 @@ public class Controller : MonoBehaviour {
 			_vers.Insert(i,vertexs[i]);
 		}
 		return _vers;
+	}
+	public List<Vector3> getPosVertexs()
+	{
+		List<Vector3> _vers=new List<Vector3>();
+		for(int i=0;i<vertexs.Count;i++)
+		{
+			_vers.Insert(i,vertexs[i].transform.position);
+		}
+		return _vers;
+	}
+	public void setPosVertexs(List<Vector3> list)
+	{
+		Delete_vertexs ();
+		Add (list);
 	}
 	
 }

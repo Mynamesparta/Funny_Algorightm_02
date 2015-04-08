@@ -3,51 +3,48 @@ using System.Collections;
 public enum State_of_Edge{Normal,Left,Right,Double}
 public class Edge : MonoBehaviour {
 
-	public Transform LeftConer=null;
-	public Transform RightConer;
+	public Vector3 LeftConer;
+	public Vector3 RightConer;
 
 	public Vector3 rotation;
 	public float DistanceToScele;
-	public GameObject clone_of_Weight_Canvas;
-	public GameObject clone_of_Stream_Canvas;
-	public int Stream_state=4;
-	public Canvas_Text_Field weight;
-	public Canvas_Text_Field stream;
-	public bool isCheked = false;
-	private bool BlockStreamAnimation=false;
+	//public GameObject clone_of_Weight_Canvas;
+	//public GameObject clone_of_Stream_Canvas;
+	//public int Stream_state=4;
+	//public Canvas_Text_Field weight;
+	//public Canvas_Text_Field stream;
+	//public bool isCheked = false;
+	//private bool BlockStreamAnimation=false;
 	private Recorder record;
 	private Animator anim;
-	private int _rightleft=0;
-	private static int Index=1;
-	private State_of_Edge state=State_of_Edge.Normal;
-	// Update is called once per frame
+	//private int _rightleft=0;
+	//private static int Index=1;
+	//private State_of_Edge state=State_of_Edge.Normal;
+	//Update is called once per frame
+	public void set(Vector3 leftConer,Vector3 rightConer)
+	{
+		LeftConer=leftConer;
+		RightConer=rightConer;
+		transform.position = LeftConer+ (RightConer - LeftConer) / 2;
+		transform.rotation=	Quaternion.FromToRotation(rotation,RightConer-LeftConer);
+		//transform.rotation= Quaternion.Euler(transform.rotation.eulerAngles.x,transform.rotation.eulerAngles.y,90f);
+		transform.localScale=new Vector3(transform.localScale.x,
+		                                 Vector3.Distance(LeftConer,RightConer)*DistanceToScele,
+		                                 transform.localScale.z);
+	}
+	//
 	void Awake()
 	{
+		//
 		anim = GetComponent<Animator> ();
 		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
-		weight = (Object.Instantiate (clone_of_Weight_Canvas,
-		                              new Vector3(-10000,-10000,-10000),
-		                              Quaternion.Euler(0,0,90f)
-		                              )as GameObject).GetComponent<Canvas_Text_Field> ();
-		weight.setState (state);
-		weight.setValue (Index);
-		stream = (Object.Instantiate (clone_of_Stream_Canvas,
-		                              new Vector3(-10000,-10000,-10000),
-		                              Quaternion.Euler(0,0,90f)
-		                              )as GameObject).GetComponent<Canvas_Text_Field> ();
-
-		Index++;
+		//
 	}
+	/*/
 	void LateUpdate () 
 	{
 		if(LeftConer!=null&&RightConer!=null)
 		{
-			transform.position = LeftConer.position + (RightConer.position - LeftConer.position) / 2;
-			transform.rotation=	Quaternion.FromToRotation(rotation,RightConer.position-LeftConer.position);
-			//transform.rotation= Quaternion.Euler(transform.rotation.eulerAngles.x,transform.rotation.eulerAngles.y,90f);
-			transform.localScale=new Vector3(transform.localScale.x,
-			                                 Vector3.Distance(LeftConer.position,RightConer.position)*DistanceToScele,
-			                                 transform.localScale.z);
 		}
 	}
 	//
@@ -62,10 +59,6 @@ public class Edge : MonoBehaviour {
 		//print (i + " ver "+mov);
 		if (record.isCreateRecord ()) 
 		{
-			if(BlockStreamAnimation)
-			{
-				return;
-			}
 			//print(i+" "+mov+" "+BlockStreamAnimation.ToString());
 			record.Add (this, i, mov);
 		}
@@ -80,11 +73,6 @@ public class Edge : MonoBehaviour {
 	{
 		if (record.isCreateRecord ()) 
 		{
-			if(BlockStreamAnimation)
-			{
-				return;
-			}
-			//print(i+" "+mov+" "+BlockStreamAnimation.ToString());
 			record.Add (this, i, mov);
 		}
 		else
@@ -94,6 +82,7 @@ public class Edge : MonoBehaviour {
 		}
 
 	}
+	//
 	public void deleteEdge(Vertex ignore=null)
 	{
 		if(ignore!=null)
@@ -387,5 +376,5 @@ public class Edge : MonoBehaviour {
 		}
 		return false;
 	}
-	//
+	/*/
 }

@@ -7,8 +7,6 @@ public class Canvas_Text_Field : MonoBehaviour {
 	public Transform LeftConer;
 	public Transform RightConer;
 	public InputField inputField;
-	public InputField inputField_Left;
-	public InputField inputField_Right;
 	public Font font;
 	//public Text textField;
 	public Vector3 ownPos;
@@ -28,7 +26,7 @@ public class Canvas_Text_Field : MonoBehaviour {
 		//_setValue ();
 		setEdit(isActiveOnTheBegin);
 		//print ("hello");
-		inputField.GetComponentInParent<Text> ().font = font;
+		inputField.GetComponentInChildren<Text> ().font = font;
 
 	}
 	void LateUpdate () 
@@ -53,43 +51,6 @@ public class Canvas_Text_Field : MonoBehaviour {
 			//print ("setEdit:" + b);
 			if (inputField != null)
 				inputField.gameObject.SetActive (b);
-			if (inputField_Left != null)
-				inputField_Left.gameObject.SetActive (false);
-			if (inputField_Right != null)
-				inputField_Right.gameObject.SetActive (false);
-			break;
-		}
-		case State_of_Edge.Double:
-		{
-			//print ("setEdit:" + b);
-			if (inputField != null)
-				inputField.gameObject.SetActive (false);
-			if (inputField_Left != null)
-				inputField_Left.gameObject.SetActive (b);
-			if (inputField_Right != null)
-				inputField_Right.gameObject.SetActive (b);
-			break;
-		}
-		case State_of_Edge.Left:
-		{
-			//print ("setEdit:" + b);
-			if (inputField != null)
-				inputField.gameObject.SetActive (false);
-			if (inputField_Left != null)
-				inputField_Left.gameObject.SetActive (b);
-			if (inputField_Right != null)
-				inputField_Right.gameObject.SetActive (false);
-			break;
-		}
-		case State_of_Edge.Right:
-		{
-			//print ("setEdit:" + b);
-			if (inputField != null)
-				inputField.gameObject.SetActive (false);
-			if (inputField_Left != null)
-				inputField_Left.gameObject.SetActive (false);
-			if (inputField_Right != null)
-				inputField_Right.gameObject.SetActive (b);
 			break;
 		}
 		}
@@ -114,38 +75,6 @@ public class Canvas_Text_Field : MonoBehaviour {
 			}
 		}
 	}
-	public void setLeftValue(int m)
-	{
-		m = Convert.ToInt32 (inputField_Left.text);
-		leftValue = m;
-		switch (state) {
-		case State_of_Edge.Left:
-			{
-				//rightValue = 0;
-				//value = 0;
-				//inputField.text = "";
-				//inputField_Left.text = m.ToString ();
-				//inputField_Right.text = "";
-				break;
-			}
-		}
-	}
-	public void setRightValue(int m)
-	{
-		m = Convert.ToInt32 (inputField_Right.text);
-		rightValue = m;
-		switch (state) {
-		case State_of_Edge.Right:
-			{
-				//leftValue = 0;
-				//value = 0;
-				//inputField.text = "";
-				//inputField_Left.text = "";
-				//inputField_Right.text = m.ToString ();
-				break;
-			}
-		}
-	}
 
 	void _setValue()
 	{
@@ -154,31 +83,6 @@ public class Canvas_Text_Field : MonoBehaviour {
 		case State_of_Edge.Normal:
 		{
 			inputField.text = value.ToString ();
-			if(inputField_Left!=null)
-				inputField_Left.text= "";
-			if(inputField_Right!=null)
-				inputField_Right.text= "";
-			break;
-		}
-		case State_of_Edge.Double:
-		{
-			inputField.text="";
-			inputField_Left.text= leftValue.ToString ();
-			inputField_Right.text= rightValue.ToString ();
-			break;
-		}
-		case State_of_Edge.Left:
-		{
-			inputField.text="";
-			inputField_Left.text= leftValue.ToString ();
-			inputField_Right.text= "";
-			break;
-		}
-		case State_of_Edge.Right:
-		{
-			inputField.text="";
-			inputField_Left.text= "";
-			inputField_Right.text= rightValue.ToString ();
 			break;
 		}
 		}

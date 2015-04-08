@@ -5,8 +5,6 @@ public class ListofScenario
 {
 	//----------------------vertex-----
 	public Vertex _vertex;
-	public int _color_of_Vertex=-1;
-	public string distance;
 	//----------------------edge-------
 	public Edge _edge;
 	public int _color_of_Edge=-1;
@@ -16,23 +14,22 @@ public class ListofScenario
 	public bool WithoutPause=false;
 	public void Play()
 	{
+		/*/
 		if(_vertex!=null)
 		{
 			if(_color_of_Vertex!=-1)
 				_vertex.setColor(_color_of_Vertex);
-			if(distance!=null)
-				_vertex.setDistance(distance);
 		}
+		/*/
 		if(_edge!=null)
 		{
-			if(_color_of_Edge!=-1)
-				_edge.setColor(_color_of_Edge,_Left_Right);
-			if(stream!=null)
-				_edge.setStream(stream);
+			//if(_color_of_Edge!=-1)
+				//_edge.setColor(_color_of_Edge,_Left_Right);
 		}
 	}
 	public void backPlay()
 	{
+		/*/
 		if(_vertex!=null)
 		{
 			if(_color_of_Vertex!=null)
@@ -40,12 +37,11 @@ public class ListofScenario
 			if(distance!=null)
 				_vertex.setDistance("");
 		}
+		/*/
 		if(_edge!=null)
 		{
-			if(_color_of_Edge!=null)
-				_edge.setColor(0,0);
-			if(stream!=null)
-				_edge.setStream("0");
+			//if(_color_of_Edge!=null)
+				//_edge.setColor(0,0);
 		}
 	}
 }
@@ -115,6 +111,7 @@ public class Recorder : MonoBehaviour {
 	{
 		StartCoroutine(_Block(time));
 	}
+	/*/
 	public void Add(Vertex vertex,int color)
 	{
 		if (state != State_of_Recorder.Create)
@@ -145,6 +142,7 @@ public class Recorder : MonoBehaviour {
 			}
 		}
 	}
+	//
 	public void Add(Vertex vertex,string distance)
 	{
 		if (state != State_of_Recorder.Create)
@@ -175,6 +173,7 @@ public class Recorder : MonoBehaviour {
 			}
 		}
 	}
+	/*/
 	public void Add(Edge edge,int color,int right_left)
 	{
 		if (state != State_of_Recorder.Create)
