@@ -3,45 +3,36 @@ using System.Collections;
 using System.Collections.Generic;
 public class ListofScenario
 {
-	//----------------------vertex-----
-	public Vertex _vertex;
-	//----------------------edge-------
-	public Edge _edge;
-	public int _color_of_Edge=-1;
-	public int _Left_Right=0;
-	public string stream;
+	public List<Vector3> function;
+	public State_of_Line state;
+	public Line line;
+	public Vertex vertex;
+	public int color;
 	//---------------------------------
 	public bool WithoutPause=false;
 	public void Play()
 	{
-		/*/
-		if(_vertex!=null)
+		if(line!=null)
 		{
-			if(_color_of_Vertex!=-1)
-				_vertex.setColor(_color_of_Vertex);
+			line.state = state;
+			if(state!=State_of_Line.End_Time)
+				line.addFunctionPoints (function);
 		}
-		/*/
-		if(_edge!=null)
+		if(vertex!=null)
 		{
-			//if(_color_of_Edge!=-1)
-				//_edge.setColor(_color_of_Edge,_Left_Right);
+			vertex.setColor(color);
 		}
 	}
 	public void backPlay()
 	{
-		/*/
-		if(_vertex!=null)
+		if(line!=null)
 		{
-			if(_color_of_Vertex!=null)
-				_vertex.setColor(0);
-			if(distance!=null)
-				_vertex.setDistance("");
+			line.state = State_of_Line.End_Time;
+			//line.addFunctionPoints (function);
 		}
-		/*/
-		if(_edge!=null)
+		if(vertex!=null)
 		{
-			//if(_color_of_Edge!=null)
-				//_edge.setColor(0,0);
+			vertex.setColor(0);
 		}
 	}
 }
@@ -111,38 +102,29 @@ public class Recorder : MonoBehaviour {
 	{
 		StartCoroutine(_Block(time));
 	}
-	/*/
+	//
+	public void Add(Line line,State_of_Line _state,List<Vector3> function)
+	{
+		if (state != State_of_Recorder.Create)
+			return;
+		current_list=new ListofScenario();
+		current_list.line = line;
+		current_list.function = function;
+		current_list.state = _state;
+		Scenario.Insert(Scenario.Count,current_list);
+		current_list = null;
+	}
 	public void Add(Vertex vertex,int color)
 	{
 		if (state != State_of_Recorder.Create)
 			return;
-		if(current_list==null)
-		{
-			current_list=new ListofScenario();
-			current_list._vertex=vertex;
-			current_list._color_of_Vertex=color;
-		}
-		else
-		{
-			if(current_list._edge==null)
-			{
-				current_list.WithoutPause=withoutPause;
-				Scenario.Insert(Scenario.Count,current_list);
-				current_list=new ListofScenario();
-				current_list._vertex=vertex;
-				current_list._color_of_Vertex=color;
-			}
-			else
-			{
-				current_list._vertex=vertex;
-				current_list._color_of_Vertex=color;
-				current_list.WithoutPause=withoutPause;
-				Scenario.Insert(Scenario.Count,current_list);
-				current_list=null;
-			}
-		}
+		current_list=new ListofScenario();
+		current_list.vertex = vertex;
+		current_list.color = color;
+		Scenario.Insert(Scenario.Count,current_list);
+		current_list = null;
 	}
-	//
+	/*/
 	public void Add(Vertex vertex,string distance)
 	{
 		if (state != State_of_Recorder.Create)
@@ -173,7 +155,7 @@ public class Recorder : MonoBehaviour {
 			}
 		}
 	}
-	/*/
+	//
 	public void Add(Edge edge,int color,int right_left)
 	{
 		if (state != State_of_Recorder.Create)
@@ -238,6 +220,7 @@ public class Recorder : MonoBehaviour {
 			}
 		}
 	}
+	/*/
 	public void Play()
 	{
 		if (state != State_of_Recorder.Play)

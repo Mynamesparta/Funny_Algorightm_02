@@ -60,7 +60,9 @@ public class Background : MonoBehaviour {
 			case State_of_Controller.Edit:
 			{
 				if (Input.GetMouseButtonDown (0))
+				{
 					contr.Add(_this_vertex);
+				}
 				if(Input.GetMouseButton(1))
 					contr.Delete_vertex(_this_vertex);
 				break;

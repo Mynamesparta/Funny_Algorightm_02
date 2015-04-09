@@ -7,9 +7,9 @@ public class Vertex : MonoBehaviour {
 	public int Index;
 	//public List<Edge> EdgeTree;
 	//public  int TreeIndex;
-	//private Recorder record;
+	private Recorder record;
 	//private Controller contr;
-	//private Animator anim;
+	private Animator anim;
 	//private bool isVertexChecked=false;
 	//private int distance;
 	//private Vertex closestVertex;
@@ -26,20 +26,20 @@ public class Vertex : MonoBehaviour {
 		/*/
 		Object.Destroy (gameObject);
 	}
-	/*/
+	//
 	void Awake()
 	{
-		//anim = GetComponent<Animator> ();
+		anim = GetComponent<Animator> ();
 		//EdgeTree = new List<Edge> ();
-		//record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
+		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
 		//contr = GameObject.FindGameObjectWithTag ("GameController").GetComponent<Controller>();
 	}
-	/*/
+	//
 	public void setIndex(int index)
 	{
 		Index = index;
 	}
-	/*/
+	//
 	public void setColor(int i)
 	{
 		if(record.isCreateRecord())
@@ -48,6 +48,11 @@ public class Vertex : MonoBehaviour {
 			if(anim!=null)
 				anim.SetInteger ("color", i);
 	}
+	public Vector3 getPos()
+	{
+		return transform.position;
+	}
+	/*/
 	public void addEdge(Edge edge)
 	{
 		EdgeTree.Add (edge);

@@ -6,9 +6,12 @@ public class Controller : MonoBehaviour {
 
 	public GameObject clone_of_Vertex;
 	public GameObject clone_of_Edge;
+	public GameObject clone_of_Line;
 	public GameObject evengameobject;
 	public GameObject canvas;
 	public GameObject button_Chose;
+	public Transform point_parent;
+	public Transform line_parent;
 	public Recorder recorder;
 	public nameAlgorithm algorightm;
 	public Camera maincamera;
@@ -27,6 +30,7 @@ public class Controller : MonoBehaviour {
 	private State_of_Controller state=State_of_Controller.Normal;
 	private Queue<int> currendIndex;
 	private List<Vertex> vertexs;
+	private List<Line> lines;
 	private List<Vertex> itemsformove;
 	private int nextIndex;
 	private Vertex first_vertex;
@@ -42,6 +46,7 @@ public class Controller : MonoBehaviour {
 		currendIndex=new Queue<int>(); 
 		nextIndex = 1;
 		vertexs = new List<Vertex> ();
+		lines = new List<Line> ();
 		itemsformove = new List<Vertex> ();
 		//even = this.GetComponent<Event_System> ();
 		//button_Chose.SetActive(false);
@@ -58,8 +63,8 @@ public class Controller : MonoBehaviour {
 				state = State_of_Controller.Normal;
 				//button_Chose.SetActive(false);
 				_canvas.inScene(0,false);
-				_canvas.inScene(2,false);
-				_canvas.inScene(3,true);
+				//_canvas.inScene(2,false);
+				_canvas.inScene(2,true);
 				GameObject[] edge= GameObject.FindGameObjectsWithTag("Edge");
 					break;
 			}
@@ -67,8 +72,8 @@ public class Controller : MonoBehaviour {
 			{
 				state = State_of_Controller.Edit;
 				_canvas.inScene(0,true);
-				_canvas.inScene(2,true);
-				_canvas.inScene(3,false);
+				//_canvas.inScene(2,true);
+				_canvas.inScene(2,false);
 				break;
 			}
 		case State_of_Controller.Play:
@@ -170,8 +175,12 @@ public class Controller : MonoBehaviour {
 		Vector3 position = getMousePosition ();
 		int index = newIndex ();
 		_vertex = (Object.Instantiate (clone_of_Vertex, position, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
-		_vertex.setIndex (index);
-		vertexs.Add (_vertex);
+		if (_vertex != null) 
+		{
+			_vertex.transform.SetParent (point_parent);
+			_vertex.setIndex (index);
+			vertexs.Add (_vertex);
+		}
 	}
 	public void Add(Vector3 position)
 	{
@@ -179,6 +188,7 @@ public class Controller : MonoBehaviour {
 		int index = newIndex ();
 		_vertex = (Object.Instantiate (clone_of_Vertex, position, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
 		_vertex.setIndex (index);
+		_vertex.transform.SetParent (point_parent);
 		vertexs.Add (_vertex);
 	}
 	public void Add(List<Vector3> poss)
@@ -190,10 +200,17 @@ public class Controller : MonoBehaviour {
 			index=newIndex();
 			_vertex = (Object.Instantiate (clone_of_Vertex, pos, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
 			_vertex.setIndex (index);
+			_vertex.transform.SetParent (point_parent);
 			vertexs.Add (_vertex);
 		}
 	}
-
+	public Line addLine ()
+	{
+		Line line = (Object.Instantiate (clone_of_Line)as GameObject).GetComponent<Line> ();
+		line.transform.SetParent (line_parent);
+		lines.Add (line);
+		return line;
+	}
 	public void Delete_vertex(Vertex _vertex)
 	{
 		//Vector3 position = getMousePosition ();
@@ -402,6 +419,9 @@ public class Controller : MonoBehaviour {
 		_canvas.Edit (4, true);
 		_canvas.inScene(4,true);
 		_canvas.TimeToRecorder ();
+		for (int i=0; i<lines.Count; i++)
+			Object.Destroy (lines [i].gameObject);
+		lines.Clear ();
 		algorightm.Start_Algoritghm ();
 		/*/
 		GameObject[] edge= GameObject.FindGameObjectsWithTag("Edge");

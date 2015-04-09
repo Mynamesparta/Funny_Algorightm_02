@@ -17,7 +17,7 @@ public class Canvas : MonoBehaviour {
 			editTime[i]=false;
 		}
 		inScene (1, true);
-		inScene (3, true);
+		inScene (2, true);
 		inScene (7,true);
 	}
 	public void Edit(int index)
@@ -45,7 +45,7 @@ public class Canvas : MonoBehaviour {
 	public void TimeToRecorder()
 	{
 		bool b = !anim [7].GetBool ("inScene");
-		for (int i =5; i<=7; i++) 
+		for (int i =4; i<=6; i++) 
 		{
 			anim[i].SetBool("inScene",b);
 		}
