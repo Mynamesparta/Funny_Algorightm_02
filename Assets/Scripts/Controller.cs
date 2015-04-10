@@ -469,5 +469,9 @@ public class Controller : MonoBehaviour {
 		Delete_vertexs ();
 		Add (list);
 	}
+	public int getLenghtOfVertexs()
+	{
+		return vertexs.Count;
+	}
 	
 }

@@ -3,26 +3,31 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum _NameAlgorithm{Kyle_Kirkpatrick};
+public enum _NameAlgorithm{Kyle_Kirkpatrick,Andrew_Edwin };
 
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
 	public _NameAlgorithm state=_NameAlgorithm.Kyle_Kirkpatrick;
 	public Text text_name;
+	public delegate void Algorightm();
 	private Recorder record;
+	Algorightm algo;
 	void Awake()
 	{
 		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
+		algo = Kyle_Kirkpatrick;
 	}
 	public void  Start_Algoritghm()//Vertex StartVertex)
 	{
-		switch (state) {
-		case _NameAlgorithm.Kyle_Kirkpatrick:
-			{
-				Kyle_Kirkpatrick();
-				break;
-			}
+		if(contr.getLenghtOfVertexs()==0)
+		{
+			print("vertexs:null");
+			return;
 		}
+		if (algo != null)
+			algo ();
+		else
+			print ("algo=null");
 		record.StartPlay();
 		//record.Play();
 	}
@@ -34,24 +39,33 @@ public class nameAlgorithm : MonoBehaviour {
 		float index = GetComponent<UnityEngine.UI.Scrollbar> ().value;
 		if (index < 0.1666666f) 
 		{
+			text_name.text="Kyle Kirkpatrick";
+			state=_NameAlgorithm.Kyle_Kirkpatrick;
 			return;
 		}
 		if(index<0.33333333333333333333333333333334f)
-		{
+		{text_name.text="Kyle Kirkpatrick";
+			state=_NameAlgorithm.Kyle_Kirkpatrick;
 			return;
 		}
 		if(index<0.5f)
 		{
 			text_name.text="Kyle Kirkpatrick";
 			state=_NameAlgorithm.Kyle_Kirkpatrick;
+			algo=Kyle_Kirkpatrick;
 			return;
 		}
 		if(index<0.66666666666666666666666666666666f)
 		{
+			text_name.text="Andrew Edwin";
+			state=_NameAlgorithm.Andrew_Edwin;
+			algo=Andrew_Edwin;
 			return;
 		}
 		if(index<8.33333333333333333333333333333333f)
 		{
+			text_name.text="Kyle Kirkpatrick";
+			state=_NameAlgorithm.Kyle_Kirkpatrick;
 			return;
 		}
 
@@ -74,6 +88,38 @@ public class nameAlgorithm : MonoBehaviour {
 		Line line = contr.addLine ();
 		record.Add(line,state,fun);
 		return line;
+	}
+	public Line addLine(Vector3 begin,Vector3 end,State_of_Line state)
+	{
+		fun=new List<Vector3>();
+		fun.Add(begin);
+		fun.Add(end);
+		Line line = contr.addLine ();
+		record.Add(line,state,fun);
+		return line;
+	}
+	public delegate bool isGreater(Vertex one,Vertex two); 
+	public Vertex[] Sort(Vertex[] vertexs,isGreater ig)
+	{
+		bool isExit;
+		Vertex _vertex;
+		for(int i = 0; i < vertexs.Length; i++)
+		{
+			isExit=true;
+			for(int j = 0; j < vertexs.Length - i -1 ; j++)
+			{
+				if(ig(vertexs[j], vertexs[j + 1]))
+				{
+					isExit=false;
+					_vertex=vertexs[j];
+					vertexs[j]=vertexs[j+1];
+					vertexs[j+1]=_vertex;
+				}
+			}
+			if(isExit)
+				break;
+		}
+		return vertexs;
 	}
 	//=====================================Kyle=Kirkpatrick================
 	List<Vector3> fun;
@@ -108,10 +154,16 @@ public class nameAlgorithm : MonoBehaviour {
 		}
 		return true;
 	}
+	bool _isGreaterKyle_Kirkpatrick(Vertex first,Vertex second)
+	{
+		return first.getPos ().y > second.getPos ().y;
+	}
 	public void Kyle_Kirkpatrick()
 	{
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
 		List<Vertex> leftConer=new List<Vertex>(), rightConer=new List<Vertex>();
+		vertexs = Sort (vertexs, _isGreaterKyle_Kirkpatrick);
+		/*/
 		bool isExit;
 		Vertex _vertex;
 		for(int i = 0; i < vertexs.Length; i++)
@@ -130,6 +182,7 @@ public class nameAlgorithm : MonoBehaviour {
 			if(isExit)
 				break;
 		}
+		/*/
 		float current_y=vertexs[0].transform.localPosition.y;
 		Vertex min=vertexs[0], max=vertexs[0];
 		for(int i=1 ;i <vertexs.Length;i++)
@@ -147,12 +200,12 @@ public class nameAlgorithm : MonoBehaviour {
 				rightConer.Add(max);
 				if(min.transform.localPosition.x!=max.transform.localPosition.x)
 				{
-					//min.setColor(1);
-					//max.setColor(3);
+					min.setColor(1);
+					max.setColor(3);
 				}
 				else
 				{
-					//min.setColor(2);
+					min.setColor(2);
 				}
 				current_y=vertexs[i].transform.localPosition.y;
 				min=vertexs[i];
@@ -163,8 +216,8 @@ public class nameAlgorithm : MonoBehaviour {
 		rightConer.Add(max);
 		if(min.transform.localPosition.x!=max.transform.localPosition.x)
 		{
-			//min.setColor(1);
-			//max.setColor(3);
+			min.setColor(1);
+			max.setColor(3);
 		}
 		else
 		{
@@ -184,6 +237,85 @@ public class nameAlgorithm : MonoBehaviour {
 		}
 		last=(new Vector3 (-1, 0,0))+rightConer[0].getPos();
 		_Kyle_Kirkpatrick (rightConer,last, 0);
+		if(rightConer[leftConer.Count-1].getPos().x!=leftConer[0].getPos().x)
+		{
+			addLine (rightConer[leftConer.Count-1], leftConer [0],State_of_Line.Without_Restrictions);
+		}
 	}
-	//===============================================================================
+	//=================================Andrew=Edwin==============================================
+	bool _isGreaterAndrew_Edwin(Vertex first,Vertex second)
+	{
+		return first.getPos ().x > second.getPos ().x;
+	}
+	bool it_in_Left_side(Vector3 ver_1,Vector3 ver_2,Vector3 ver)
+	{
+		Vector3 vec = ver_2 - ver_1;
+		if (vec.x != 0)
+			return ver.y >= (ver_1.y + vec.y / vec.x * (ver.x - ver_1.x));
+		else
+			return ver.x <= ver_1.x;
+	}
+	public void searchAndrew_Edwin(List<Vector3> list,Vector3 first)
+	{
+		int i, j, k;
+		bool first_side = it_in_Left_side (list [0], list [1], first);
+		bool is_norm_Edge;
+		Line line;
+		for(i=0;i<list.Count;i++)
+		{
+			for(j=i+1;j<list.Count;j++)
+			{
+				line=addLine(list[i],list[j],State_of_Line.Without_Restrictions);
+				is_norm_Edge=true;
+				for(k=0;k<list.Count;k++)
+				{
+					if(k!=i&&k!=j)
+					{
+						if(first_side!=it_in_Left_side(list[i],list[j],list[k]))
+						{
+							addLine(line,State_of_Line.End_Time);
+							is_norm_Edge=false;
+							break;
+						}
+
+					}
+					else
+					{
+						continue;
+					}
+				}
+				if(is_norm_Edge)
+					break;
+			}
+		}
+	}
+	public void Andrew_Edwin()
+	{
+		Vertex[] vertexs=contr.getVertexs ().ToArray();
+		List<Vertex> leftConer=new List<Vertex>(), rightConer=new List<Vertex>();
+		vertexs = Sort (vertexs, _isGreaterAndrew_Edwin);
+		Line _Piece_of_Cake = addLine (vertexs [0], vertexs [vertexs.Length - 1], State_of_Line.Without_Restrictions);
+		List<Vector3> Up=new List<Vector3>(),Down=new List<Vector3>();
+		Vector3 point_1=vertexs [0].getPos(), point_2=vertexs [vertexs.Length - 1].getPos(), point_3;
+		for(int i=0;i<vertexs.Length;i++)
+		{
+			point_3=vertexs[i].getPos();
+			if(it_in_Left_side(point_1,point_2,point_3))
+			{
+				Up.Add(point_3);
+				vertexs[i].setColor(1);
+			}
+			else
+			{
+				Down.Add(point_3);
+				vertexs[i].setColor(3);
+			}
+		}
+		addLine (_Piece_of_Cake, State_of_Line.End_Time);
+		searchAndrew_Edwin (Up, Down [0]);
+		Down.Insert (0,Up [0]);
+		Down.Insert (Down.Count,Up[Up.Count-1]);
+		searchAndrew_Edwin(Down,Up[1]);
+
+	}
 }

@@ -7,7 +7,7 @@ public class Line : MonoBehaviour {
 	public float magnitude=10f;
 	public float magnitude_speed=1f;
 	public int const_length=10;
-	public bool isTimeForSin=false;
+	public static bool isTimeForSin=false;
 	public State_of_Line state=State_of_Line.Without_Restrictions;
 	//private Vector3[]
 	private List<Vector3> list;
@@ -76,13 +76,13 @@ public class Line : MonoBehaviour {
 			{
 				toBegin();
 				function.Clear();
-				return ;
+
 			}
 			else
 			{
 				list.RemoveAt(0);
 				min_Index++;
-				return ;
+
 			}
 			break;
 		}

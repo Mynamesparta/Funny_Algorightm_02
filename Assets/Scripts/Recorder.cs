@@ -53,6 +53,13 @@ public class Recorder : MonoBehaviour {
 	{
 		Scenario = new List<ListofScenario> ();
 	}
+	void Update()
+	{
+		if(Input.GetButtonDown("isTimeForSin"))
+		{
+			Line.isTimeForSin=(Line.isTimeForSin?false:true);
+		}
+	}
 	IEnumerator  _Block(float time)
 	{
 		State_of_Recorder _state = new State_of_Recorder();
