@@ -292,6 +292,19 @@ public class Recorder : MonoBehaviour {
 		}
 
 	}
+	public void toEnd()
+	{
+		if (Iteration <= -1)
+			Iteration = 0;
+		if(Iteration==Scenario.Count)
+		{
+			Iteration=Scenario.Count-1; 
+		}
+		for(;Iteration<Scenario.Count;Iteration++)
+		{
+			Scenario[Iteration].Play();
+		}
+	}
 	
 	public void Rewind()
 	{

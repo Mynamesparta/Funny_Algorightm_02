@@ -58,6 +58,8 @@
      <Compile Include="Assets\Scripts\Vertex.cs" />
      <Compile Include="Assets\Scripts\nameAlgorithm.cs" />
      <Compile Include="Assets\Test.cs" />
+     <None Include="Assets\docs\Points_information\None_name.txt" />
+     <None Include="Assets\docs\Points_information\Circle.txt" />
      <None Include="Assets\docs\Points_information\Mynamesparta.txt" />
      <None Include="Assets\docs\Points_information\Chaos.txt" />
      <None Include="Assets\docs\Points_information\Line.txt" />

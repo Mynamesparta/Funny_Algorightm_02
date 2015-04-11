@@ -59,32 +59,29 @@ public class Controller : MonoBehaviour {
 	{
 		switch (state) {
 		case State_of_Controller.Edit:
-			{
-				state = State_of_Controller.Normal;
-				//button_Chose.SetActive(false);
-				_canvas.inScene(0,false);
-				//_canvas.inScene(2,false);
-				_canvas.inScene(2,true);
-				GameObject[] edge= GameObject.FindGameObjectsWithTag("Edge");
-					break;
-			}
+		{
+			state = State_of_Controller.Normal;
+			_canvas.inScene(name_of_Button.NameAlgorithm,false);
+			_canvas.inScene(name_of_Button.Play,true);
+			GameObject[] edge= GameObject.FindGameObjectsWithTag("Edge");
+			break;
+		}
 		case State_of_Controller.Normal:
-			{
-				state = State_of_Controller.Edit;
-				_canvas.inScene(0,true);
-				//_canvas.inScene(2,true);
-				_canvas.inScene(2,false);
-				break;
-			}
+		{
+			state = State_of_Controller.Edit;
+			_canvas.inScene(name_of_Button.NameAlgorithm,true);
+			_canvas.inScene(name_of_Button.Play,false);
+			break;
+		}
 		case State_of_Controller.Play:
 		{
 			state=State_of_Controller.Edit;
 			recorder.toBegin();
 			recorder.Pause();
-			_canvas.inScene(0,true);
-			_canvas.inScene(4,false);
-			_canvas.inScene(2,true);
-			_canvas.inScene(3,false);
+			Delete_vertex(algorightm.vertex_for_test);
+			_canvas.TimeToRecorder(false);
+			_canvas.inScene(name_of_Button.NameAlgorithm,true);
+			_canvas.inScene(name_of_Button.FileList,true);
 			break;
 		}
 		}
@@ -169,7 +166,7 @@ public class Controller : MonoBehaviour {
 
 	}
 	//
-	public void Add()
+	public Vertex Add()
 	{
 		Vertex _vertex;
 		Vector3 position = getMousePosition ();
@@ -181,15 +178,20 @@ public class Controller : MonoBehaviour {
 			_vertex.setIndex (index);
 			vertexs.Add (_vertex);
 		}
+		return _vertex;
 	}
-	public void Add(Vector3 position)
+	public Vertex Add(Vector3 position)
 	{
+		if (position == null)
+			return null;
 		Vertex _vertex;
 		int index = newIndex ();
 		_vertex = (Object.Instantiate (clone_of_Vertex, position, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
+		print ("new Vertex:" + position.ToString ());
 		_vertex.setIndex (index);
 		_vertex.transform.SetParent (point_parent);
 		vertexs.Add (_vertex);
+		return _vertex;
 	}
 	public void Add(List<Vector3> poss)
 	{
@@ -213,6 +215,8 @@ public class Controller : MonoBehaviour {
 	}
 	public void Delete_vertex(Vertex _vertex)
 	{
+		if (_vertex == null)
+			return;
 		//Vector3 position = getMousePosition ();
 //		currendIndex.Enqueue(_vertex.Index);
 		vertexs.Remove(_vertex);
@@ -416,9 +420,10 @@ public class Controller : MonoBehaviour {
 		/*/
 		recorder.StartCreate ();
 		state = State_of_Controller.Play;
-		_canvas.Edit (4, true);
-		_canvas.inScene(4,true);
-		_canvas.TimeToRecorder ();
+		_canvas.Edit (name_of_Button.Play, true);
+		_canvas.inScene(name_of_Button.FileList,false);
+		//_canvas.inScene(4,true);
+		_canvas.TimeToRecorder (true);
 		for (int i=0; i<lines.Count; i++)
 			Object.Destroy (lines [i].gameObject);
 		lines.Clear ();

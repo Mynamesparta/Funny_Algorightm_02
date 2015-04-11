@@ -3,13 +3,15 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum _NameAlgorithm{Kyle_Kirkpatrick,Andrew_Edwin };
+public enum _NameAlgorithm{Kyle_Kirkpatrick,Andrew_Edwin,Graham,Last  };
 
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
 	public _NameAlgorithm state=_NameAlgorithm.Kyle_Kirkpatrick;
 	public Text text_name;
 	public delegate void Algorightm();
+	public Vertex vertex_for_test;
+	public Color start_for_algorithm, end_for_algorithm;
 	private Recorder record;
 	Algorightm algo;
 	void Awake()
@@ -64,11 +66,15 @@ public class nameAlgorithm : MonoBehaviour {
 		}
 		if(index<8.33333333333333333333333333333333f)
 		{
-			text_name.text="Kyle Kirkpatrick";
-			state=_NameAlgorithm.Kyle_Kirkpatrick;
+			text_name.text="Graham ";
+			state=_NameAlgorithm.Graham ;
+			algo=Graham;
 			return;
 		}
-
+		text_name.text="Last ";
+		state=_NameAlgorithm.Last ;
+		algo=Last;
+		
 	}
 	public void addLine(Line line,State_of_Line state,Vertex begin=null,Vertex end=null)
 	{
@@ -82,7 +88,7 @@ public class nameAlgorithm : MonoBehaviour {
 	}
 	public Line addLine(Vertex begin,Vertex end,State_of_Line state)
 	{
-		fun=new List<Vector3>();
+		fun=new List<Vector3>();//Vector3
 		fun.Add(begin.getPos());
 		fun.Add(end.getPos());
 		Line line = contr.addLine ();
@@ -127,7 +133,14 @@ public class nameAlgorithm : MonoBehaviour {
 	{
 		Vector3 a = begin.getPos() - last;
 		Vector3 b = end.getPos() - begin.getPos();
-		print ("angle:"+(a.x +"*"+ b.y +"-"+ a.y +"*"+ b.x));
+		//print ("angle:"+(a.x +"*"+ b.y +"-"+ a.y +"*"+ b.x));
+		return a.x * b.y - a.y * b.x <= 0;
+	}
+	bool isRightRotation(Vector3 last,Vector3 begin,Vector3 end)
+	{
+		Vector3 a = begin - last;
+		Vector3 b = end - begin;
+		//print ("angle:"+(a.x +"*"+ b.y +"-"+ a.y +"*"+ b.x));
 		return a.x * b.y - a.y * b.x <= 0;
 	}
 	bool is_First=true;
@@ -251,7 +264,10 @@ public class nameAlgorithm : MonoBehaviour {
 	{
 		Vector3 vec = ver_2 - ver_1;
 		if (vec.x != 0)
-			return ver.y >= (ver_1.y + vec.y / vec.x * (ver.x - ver_1.x));
+			if(vec.x>0)
+				return ver.y > (ver_1.y + vec.y / vec.x * (ver.x - ver_1.x));
+			else
+				return ver.y < (ver_1.y + vec.y / vec.x * (ver.x - ver_1.x));
 		else
 			return ver.x <= ver_1.x;
 	}
@@ -317,5 +333,117 @@ public class nameAlgorithm : MonoBehaviour {
 		Down.Insert (Down.Count,Up[Up.Count-1]);
 		searchAndrew_Edwin(Down,Up[1]);
 
+	}
+	//=================================Graham==============================================
+	Vector3 center;
+	bool _isGreaterGraham(Vertex first,Vertex second)
+	{
+		Vector3 _first = center-first.getPos () ;
+		Vector3 _second = second.getPos()- center;
+		return _first.x*_second.y-_first.y*_second.x>0;
+	}
+	bool _isGreaterGraham(Vector3 first,Vector3 second)
+	{
+		first = first - center;
+		second = second - center;
+		return first.x*second.y-first.y*second.x<0;
+	}
+	int _i=1000;
+	public void Graham()
+	{
+		Vertex[] vertexs=contr.getVertexs ().ToArray();
+		Vector3 min, max;
+		min = max = vertexs [0].getPos ();
+		for(int i=1;i<vertexs.Length;i++)
+		{
+			if(min.x>vertexs[i].getPos().x)
+				min=vertexs[i].getPos();
+			if(max.x<vertexs[i].getPos().x)
+				max=vertexs[i].getPos();
+		}
+		center = min + (max - min) / 2;
+		print (center.ToString ());
+		vertex_for_test=contr.Add (center);
+		vertex_for_test.setColor (1);
+		vertexs = Sort (vertexs, _isGreaterGraham);
+		//vertexs = Sort (vertexs, _isGreaterGraham);
+		List<Line> lines = new List<Line> ();
+		for (int i=0; i<vertexs.Length-1; i++) 
+		{
+			addLine(center,vertexs[i].getPos(),State_of_Line.Without_Restrictions).setColor(start_for_algorithm,end_for_algorithm);
+			lines.Add(addLine(vertexs[i],vertexs[i+1],State_of_Line.Without_Restrictions));
+		}
+		addLine(center,vertexs[vertexs.Length-1].getPos(),State_of_Line.Without_Restrictions).setColor(start_for_algorithm,end_for_algorithm);
+		lines.Add(addLine(vertexs[vertexs.Length-1],vertexs[0],State_of_Line.Without_Restrictions));
+		List<Vector3> list_of_vertexs = new List<Vector3> ();
+		for(int i=0;i<vertexs.Length-1;i++)
+		{
+			list_of_vertexs.Add(vertexs[i].getPos());
+		}
+		int Iter=1;
+		//bool first_bool=it_in_Left_side(list_of_vertexs[0],list_of_vertexs[1],center);
+		while(Iter<list_of_vertexs.Count)
+		{
+			_i--;
+			if(_i<=0)
+				break;
+			if(false&&Iter==0)
+			{
+				if(!it_in_Left_side(list_of_vertexs[list_of_vertexs.Count-1],
+				                    list_of_vertexs[1],
+				                    list_of_vertexs[0]))
+				{
+					addLine(lines[list_of_vertexs.Count],State_of_Line.End_Time);
+					addLine(lines[0],State_of_Line.End_Time);
+					lines.RemoveAt(list_of_vertexs.Count);
+					lines.RemoveAt(0);
+					lines.Insert(lines.Count,addLine(list_of_vertexs[list_of_vertexs.Count-1],
+					                                           list_of_vertexs[1],
+					                                           State_of_Line.Without_Restrictions));
+					list_of_vertexs.RemoveAt(0);
+				}
+				continue;
+			}
+			if(Iter==list_of_vertexs.Count-1)
+			{
+				if(!it_in_Left_side(list_of_vertexs[list_of_vertexs.Count-2],
+				                    list_of_vertexs[0],
+				                    list_of_vertexs[list_of_vertexs.Count-1]))
+				{
+					addLine(lines[list_of_vertexs.Count-1],State_of_Line.End_Time);
+					addLine(lines[list_of_vertexs.Count],State_of_Line.End_Time);
+					lines.RemoveAt(list_of_vertexs.Count);
+					lines.RemoveAt(list_of_vertexs.Count-1);
+					lines.Insert(lines.Count,addLine(list_of_vertexs[list_of_vertexs.Count-1],
+					                                           list_of_vertexs[0],
+					                                           State_of_Line.Without_Restrictions));
+					list_of_vertexs.RemoveAt(list_of_vertexs.Count-1);
+					//Iter--;
+				}
+				continue;
+			}
+			print(Iter+"<"+list_of_vertexs.Count);
+			if(!it_in_Left_side(list_of_vertexs[Iter+1],
+			                    list_of_vertexs[Iter-1],
+			                    list_of_vertexs[Iter]))
+			{
+				addLine(lines[Iter-1],State_of_Line.End_Time);
+				addLine(lines[Iter  ],State_of_Line.End_Time);
+				lines.RemoveAt(Iter);
+				lines.RemoveAt(Iter-1);
+				lines.Insert(Iter-1,addLine(list_of_vertexs[Iter-1],list_of_vertexs[Iter+1],State_of_Line.Without_Restrictions));
+				list_of_vertexs.RemoveAt(Iter);
+				Iter--;
+				if(Iter<=0)
+					Iter=1;
+				continue;
+			}
+			Iter++;
+		}
+		//contr.Delete_vertex (ver);
+	}
+	//=================================Last==============================================
+	public void Last()
+	{
 	}
 }

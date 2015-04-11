@@ -75,7 +75,7 @@ public class Line : MonoBehaviour {
 			if(list.Count==0)
 			{
 				toBegin();
-				function.Clear();
+				//function.Clear();
 
 			}
 			else
@@ -93,6 +93,8 @@ public class Line : MonoBehaviour {
 				state=State_of_Line.End_Time;
 			return;
 		}
+		if (list.Count <= 0)
+			return;
 		lastIndex=list.Count-1;
 		_speed = speed * 0.0197486f;//*Time.deltaTime;
 		//print (list [lastIndex].ToString() + function [Index].ToString());
@@ -195,13 +197,17 @@ public class Line : MonoBehaviour {
 		function.Add (vec);
 		if (function.Count == 1)
 			list.Add(vec);
-		print(list[0].ToString());
+		//print(list[0].ToString());
 	}
 	public void addFunctionPoints(List<Vector3> _list)
 	{
 		function = _list;
 		list.Add (_list [0]);
 		toBegin ();
+	}
+	public void setColor(Color begin,Color end)
+	{
+		line_renderer.SetColors (begin, end);
 	}
 
 }
