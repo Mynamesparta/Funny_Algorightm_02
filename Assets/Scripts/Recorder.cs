@@ -27,7 +27,10 @@ public class ListofScenario
 	{
 		if(line!=null)
 		{
-			line.state = State_of_Line.End_Time;
+			if(state==State_of_Line.Without_Restrictions)
+				line.state = State_of_Line.End_Time;
+			else
+				line.state = State_of_Line.Without_Restrictions;
 			//line.addFunctionPoints (function);
 		}
 		if(vertex!=null)

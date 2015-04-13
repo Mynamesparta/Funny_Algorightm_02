@@ -7,7 +7,6 @@ using System.Text;
 using System;
 
 public class File_Input : MonoBehaviour {
-	public int hello;
 	private File_Controller Fcon;
 	private Animator anim;
 	private Text text;
@@ -108,6 +107,10 @@ public class File_Input : MonoBehaviour {
 			list.Add(vec);
 		}
 		return list;
+	}
+	public string getName()
+	{
+		return text.text;
 	}
 
 }

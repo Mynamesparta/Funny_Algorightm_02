@@ -1,31 +1,50 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-public enum State_of_Controller {Play,Edit,Normal,Pick,_choseStartVertex};
-public class Controller : MonoBehaviour {
 
+public enum State_of_Controller {Play,Edit,Normal,Pick,_choseStartVertex};
+[System.Serializable]
+public struct Clone_of_Object
+{
 	public GameObject clone_of_Vertex;
 	public GameObject clone_of_Edge;
 	public GameObject clone_of_Line;
-	public GameObject evengameobject;
-	public GameObject canvas;
-	public GameObject button_Chose;
+}
+[System.Serializable]
+public struct Parents
+{
 	public Transform point_parent;
 	public Transform line_parent;
+}
+[System.Serializable]
+public struct Scripts
+{
+	public GameObject canvas;
 	public Recorder recorder;
 	public nameAlgorithm algorightm;
 	public Camera maincamera;
+	public File_Controller Fcon;
+}
+
+public class Controller : MonoBehaviour {
+
+	public Clone_of_Object CLONE;
+	public Parents PARENTS;
+	public Scripts SCRIPTS;
+	//public GameObject evengameobject;
+	//public GameObject button_Chose;
 	//public Transform center;
 	public uint maxNumberOfVertex=10;
-	public float radius_of_Arey=1;
+	//public float radius_of_Arey=1;
 	public float pixelH;
 	public float pixelW;
-	
-	public Vertex startVertex;
-	public Vertex endVertex;
-	public Vector2 CreateZone;
-	public int Active_State=1;
-	public int Pick_State=1;
+	public _NameAlgorithm startAgorithm;
+	public string startFile;
+	//public Vertex startVertex;
+	//public Vertex endVertex;
+	//public Vector2 CreateZone;
+	//public int Active_State=1;
+	//public int Pick_State=1;
 
 	private State_of_Controller state=State_of_Controller.Normal;
 	private Queue<int> currendIndex;
@@ -50,8 +69,9 @@ public class Controller : MonoBehaviour {
 		itemsformove = new List<Vertex> ();
 		//even = this.GetComponent<Event_System> ();
 		//button_Chose.SetActive(false);
-		_canvas = canvas.GetComponent<Canvas> ();
-
+		_canvas = SCRIPTS.canvas.GetComponent<Canvas> ();
+		SCRIPTS.algorightm.setAlgorihtm (startAgorithm);
+		SCRIPTS.Fcon.Read (startFile);
 	}
 
 
@@ -76,9 +96,9 @@ public class Controller : MonoBehaviour {
 		case State_of_Controller.Play:
 		{
 			state=State_of_Controller.Edit;
-			recorder.toBegin();
-			recorder.Pause();
-			Delete_vertex(algorightm.vertex_for_test);
+			SCRIPTS.recorder.toBegin();
+			SCRIPTS.recorder.Pause();
+			Delete_vertex(SCRIPTS.algorightm.vertex_for_test);
 			_canvas.TimeToRecorder(false);
 			_canvas.inScene(name_of_Button.NameAlgorithm,true);
 			_canvas.inScene(name_of_Button.FileList,true);
@@ -129,7 +149,7 @@ public class Controller : MonoBehaviour {
 	public Vector3 getMousePosition()
 	{
 		Vector3 position = Input.mousePosition;
-		position = maincamera.ScreenToWorldPoint (position);
+		position = SCRIPTS.maincamera.ScreenToWorldPoint (position);
 		position.z = 0;
 		/*/
 		Vector3 position = new Vector3(Input.mousePosition.x*pixelW,Input.mousePosition.y*pixelH);
@@ -171,10 +191,10 @@ public class Controller : MonoBehaviour {
 		Vertex _vertex;
 		Vector3 position = getMousePosition ();
 		int index = newIndex ();
-		_vertex = (Object.Instantiate (clone_of_Vertex, position, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
+		_vertex = (Object.Instantiate (CLONE.clone_of_Vertex, position, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
 		if (_vertex != null) 
 		{
-			_vertex.transform.SetParent (point_parent);
+			_vertex.transform.SetParent (PARENTS.point_parent);
 			_vertex.setIndex (index);
 			vertexs.Add (_vertex);
 		}
@@ -186,10 +206,10 @@ public class Controller : MonoBehaviour {
 			return null;
 		Vertex _vertex;
 		int index = newIndex ();
-		_vertex = (Object.Instantiate (clone_of_Vertex, position, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
+		_vertex = (Object.Instantiate (CLONE.clone_of_Vertex, position, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
 		print ("new Vertex:" + position.ToString ());
 		_vertex.setIndex (index);
-		_vertex.transform.SetParent (point_parent);
+		_vertex.transform.SetParent (PARENTS.point_parent);
 		vertexs.Add (_vertex);
 		return _vertex;
 	}
@@ -200,16 +220,16 @@ public class Controller : MonoBehaviour {
 		foreach(Vector3 pos in poss)
 		{
 			index=newIndex();
-			_vertex = (Object.Instantiate (clone_of_Vertex, pos, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
+			_vertex = (Object.Instantiate (CLONE.clone_of_Vertex, pos, Quaternion.Euler (0, 0, 0))as GameObject).GetComponent<Vertex> ();
 			_vertex.setIndex (index);
-			_vertex.transform.SetParent (point_parent);
+			_vertex.transform.SetParent (PARENTS.point_parent);
 			vertexs.Add (_vertex);
 		}
 	}
 	public Line addLine ()
 	{
-		Line line = (Object.Instantiate (clone_of_Line)as GameObject).GetComponent<Line> ();
-		line.transform.SetParent (line_parent);
+		Line line = (Object.Instantiate (CLONE.clone_of_Line)as GameObject).GetComponent<Line> ();
+		line.transform.SetParent (PARENTS.line_parent);
 		lines.Add (line);
 		return line;
 	}
@@ -418,7 +438,7 @@ public class Controller : MonoBehaviour {
 			vertex.resetDistanse();
 		}
 		/*/
-		recorder.StartCreate ();
+		SCRIPTS.recorder.StartCreate ();
 		state = State_of_Controller.Play;
 		_canvas.Edit (name_of_Button.Play, true);
 		_canvas.inScene(name_of_Button.FileList,false);
@@ -427,7 +447,7 @@ public class Controller : MonoBehaviour {
 		for (int i=0; i<lines.Count; i++)
 			Object.Destroy (lines [i].gameObject);
 		lines.Clear ();
-		algorightm.Start_Algoritghm ();
+		SCRIPTS.algorightm.Start_Algoritghm ();
 		/*/
 		GameObject[] edge= GameObject.FindGameObjectsWithTag("Edge");
 		for(int i=0;i<edge.Length;i++)

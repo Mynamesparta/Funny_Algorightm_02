@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-
 public class File_Controller : MonoBehaviour {
 	public GameObject clone_of_file_name;
 	public Transform transform_list;
@@ -14,10 +13,11 @@ public class File_Controller : MonoBehaviour {
 	public float deltaRefresh=10f;
 	public Animator anim;
 	public Controller contr;
+	public string startFile = "Mynamesparta";
 
 	private float size_of_Panel;
 	private VerticalLayoutGroup verticalLG;
-	private List<File_Input> list;
+	private List<File_Input> list_of_file;
 	private DirectoryInfo directory;
 	private File_Input current;
 	private float current_time;
@@ -27,7 +27,7 @@ public class File_Controller : MonoBehaviour {
 	{
 		verticalLG = GetComponent<VerticalLayoutGroup> ();
 		directory = new DirectoryInfo ("Assets//docs//Points_information");
-		list = new List<File_Input> ();
+		list_of_file = new List<File_Input> ();
 		StartCoroutine ("_RefreshFile");
 	}
 	void Update()
@@ -45,6 +45,7 @@ public class File_Controller : MonoBehaviour {
 		{
 			isFirst=false;
 			RefreshFile();
+			Read(startFile);
 		}
 	}
 	IEnumerator _RefreshFile()
@@ -55,12 +56,12 @@ public class File_Controller : MonoBehaviour {
 	void Refresh()
 	{
 		float y = 0;
-		for(int i=0;i<list.Count;i++)
+		for(int i=0;i<list_of_file.Count;i++)
 		{
 			y=-size_of_file_name*i;
-			list[i].transform.localPosition=new Vector3(list[i].transform.localPosition.x,
+			list_of_file[i].transform.localPosition=new Vector3(list_of_file[i].transform.localPosition.x,
 			                                            y,
-			                                            list[i].transform.localPosition.z);
+			                                            list_of_file[i].transform.localPosition.z);
 		}
 	}
 	string getInputText()
@@ -73,16 +74,16 @@ public class File_Controller : MonoBehaviour {
 	}
 	void size_of_listChanged()
 	{
-		scrollbar.size = number_of_file_name / (number_of_file_name > list.Count ? number_of_file_name : list.Count);
-		size_of_Panel = list.Count * size_of_file_name;
+		scrollbar.size = number_of_file_name / (number_of_file_name > list_of_file.Count ? number_of_file_name : list_of_file.Count);
+		size_of_Panel = list_of_file.Count * size_of_file_name;
 		scrollbar.value = 0;
 		Refresh ();
 	}
 	public void RefreshFile()
 	{
-		for(int i=0;i<list.Count;i++)
-			Object.Destroy(list[i].gameObject);
-		list.Clear();
+		for(int i=0;i<list_of_file.Count;i++)
+			Object.Destroy(list_of_file[i].gameObject);
+		list_of_file.Clear();
 		if(directory.Exists)
 		{
 			FileInfo[] files = directory.GetFiles ("*.txt");
@@ -94,7 +95,7 @@ public class File_Controller : MonoBehaviour {
 				file_name.transform.localPosition = new Vector3 (0, 0, 0);
 				file_name.transform.localScale = new Vector3 (1, 1, 1);
 				file_name.setFile(files[i]);
-				list.Add(file_name);
+				list_of_file.Add(file_name);
 			}
 			size_of_listChanged();
 		}
@@ -109,7 +110,7 @@ public class File_Controller : MonoBehaviour {
 		file_name.transform.localScale = new Vector3 (1, 1, 1);
 		if(file_name.setName (getInputText(),directory))
 		{
-			list.Insert (0,file_name);
+			list_of_file.Insert (0,file_name);
 			size_of_listChanged ();
 			Save(file_name);
 		}
@@ -136,7 +137,7 @@ public class File_Controller : MonoBehaviour {
 	{
 		if (current == null)
 			return;
-		list.Remove (current);
+		list_of_file.Remove (current);
 		current.Delete ();
 		Object.Destroy (current.gameObject);
 		current = null;
@@ -176,6 +177,18 @@ public class File_Controller : MonoBehaviour {
 		{
 			List<Vector3> list=current.Read();
 			contr.setPosVertexs (list);
+		}
+	}
+	public void Read(string name)
+	{
+		foreach(File_Input file in list_of_file)
+		{
+			if(file.getName().Replace(" ","")==name)
+			{
+				List<Vector3> list=file.Read();
+				contr.setPosVertexs (list);
+				break;
+			}
 		}
 	}
 

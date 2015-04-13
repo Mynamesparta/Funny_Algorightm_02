@@ -1,23 +1,25 @@
-using UnityEngine;
+ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum _NameAlgorithm{Kyle_Kirkpatrick,Andrew_Edwin,Graham,Last  };
+[System.Serializable]
+public enum _NameAlgorithm{Kyle_Kirkpatrick=3,Andrew_Edwin,Graham,Last };
 
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
-	public _NameAlgorithm state=_NameAlgorithm.Kyle_Kirkpatrick;
 	public Text text_name;
 	public delegate void Algorightm();
 	public Vertex vertex_for_test;
 	public Color start_for_algorithm, end_for_algorithm;
+	private _NameAlgorithm state;
 	private Recorder record;
+	private int lenght=6;
 	Algorightm algo;
 	void Awake()
 	{
 		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
-		algo = Kyle_Kirkpatrick;
+		setAlgorihtm (_NameAlgorithm.Graham);
 	}
 	public void  Start_Algoritghm()//Vertex StartVertex)
 	{
@@ -336,11 +338,25 @@ public class nameAlgorithm : MonoBehaviour {
 	}
 	//=================================Graham==============================================
 	Vector3 center;
+	float getAngel_inPolarCoordinateSystem (Vector3 ver)
+	{
+		if(ver.x>0&&ver.y>=0)
+			return Mathf.Atan(ver.y/ver.x);
+		if(ver.x>0&&ver.y<0)
+			return Mathf.Atan(ver.y/ver.x)+Mathf.PI*2;
+		if (ver.x < 0)
+			return Mathf.Atan(ver.y/ver.x)+Mathf.PI;
+		if (ver.x == 0)
+		if (ver.y > 0)
+			return Mathf.PI / 2;
+		else
+			return Mathf.PI * 3 / 2;
+		return -1f;
+	}
 	bool _isGreaterGraham(Vertex first,Vertex second)
 	{
-		Vector3 _first = center-first.getPos () ;
-		Vector3 _second = second.getPos()- center;
-		return _first.x*_second.y-_first.y*_second.x>0;
+		return getAngel_inPolarCoordinateSystem(first.getPos()-center) >
+			getAngel_inPolarCoordinateSystem(second.getPos()-center);
 	}
 	bool _isGreaterGraham(Vector3 first,Vector3 second)
 	{
@@ -348,7 +364,6 @@ public class nameAlgorithm : MonoBehaviour {
 		second = second - center;
 		return first.x*second.y-first.y*second.x<0;
 	}
-	int _i=1000;
 	public void Graham()
 	{
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
@@ -376,53 +391,62 @@ public class nameAlgorithm : MonoBehaviour {
 		addLine(center,vertexs[vertexs.Length-1].getPos(),State_of_Line.Without_Restrictions).setColor(start_for_algorithm,end_for_algorithm);
 		lines.Add(addLine(vertexs[vertexs.Length-1],vertexs[0],State_of_Line.Without_Restrictions));
 		List<Vector3> list_of_vertexs = new List<Vector3> ();
-		for(int i=0;i<vertexs.Length-1;i++)
+		for(int i=0;i<vertexs.Length;i++)
 		{
 			list_of_vertexs.Add(vertexs[i].getPos());
 		}
-		int Iter=1;
+		int Iter=0;
 		//bool first_bool=it_in_Left_side(list_of_vertexs[0],list_of_vertexs[1],center);
+		int _i=1000;
 		while(Iter<list_of_vertexs.Count)
 		{
 			_i--;
 			if(_i<=0)
 				break;
-			if(false&&Iter==0)
+			if(Iter==0)
 			{
-				if(!it_in_Left_side(list_of_vertexs[list_of_vertexs.Count-1],
-				                    list_of_vertexs[1],
+				print(list_of_vertexs[1].ToString()+list_of_vertexs[list_of_vertexs.Count-1].ToString()+list_of_vertexs[0].ToString());
+				if(!it_in_Left_side(list_of_vertexs[1],
+				                    list_of_vertexs[list_of_vertexs.Count-1],
 				                    list_of_vertexs[0]))
 				{
-					addLine(lines[list_of_vertexs.Count],State_of_Line.End_Time);
+					addLine(lines[lines.Count-1],State_of_Line.End_Time);
 					addLine(lines[0],State_of_Line.End_Time);
-					lines.RemoveAt(list_of_vertexs.Count);
+					lines.RemoveAt(lines.Count-1);
 					lines.RemoveAt(0);
 					lines.Insert(lines.Count,addLine(list_of_vertexs[list_of_vertexs.Count-1],
 					                                           list_of_vertexs[1],
 					                                           State_of_Line.Without_Restrictions));
 					list_of_vertexs.RemoveAt(0);
 				}
+				else
+				{
+					Iter++;
+				}
 				continue;
 			}
 			if(Iter==list_of_vertexs.Count-1)
 			{
-				if(!it_in_Left_side(list_of_vertexs[list_of_vertexs.Count-2],
-				                    list_of_vertexs[0],
+				if(!it_in_Left_side(list_of_vertexs[0],
+				                    list_of_vertexs[list_of_vertexs.Count-2],
 				                    list_of_vertexs[list_of_vertexs.Count-1]))
 				{
-					addLine(lines[list_of_vertexs.Count-1],State_of_Line.End_Time);
-					addLine(lines[list_of_vertexs.Count],State_of_Line.End_Time);
-					lines.RemoveAt(list_of_vertexs.Count);
-					lines.RemoveAt(list_of_vertexs.Count-1);
-					lines.Insert(lines.Count,addLine(list_of_vertexs[list_of_vertexs.Count-1],
+					addLine(lines[lines.Count-2],State_of_Line.End_Time);
+					addLine(lines[lines.Count-1],State_of_Line.End_Time);
+					lines.RemoveAt(lines.Count-1);
+					lines.RemoveAt(lines.Count-1);
+					lines.Insert(lines.Count,addLine(list_of_vertexs[list_of_vertexs.Count-2],
 					                                           list_of_vertexs[0],
 					                                           State_of_Line.Without_Restrictions));
 					list_of_vertexs.RemoveAt(list_of_vertexs.Count-1);
 					//Iter--;
 				}
+				else
+				{
+					Iter++;
+				}
 				continue;
 			}
-			print(Iter+"<"+list_of_vertexs.Count);
 			if(!it_in_Left_side(list_of_vertexs[Iter+1],
 			                    list_of_vertexs[Iter-1],
 			                    list_of_vertexs[Iter]))
@@ -434,16 +458,22 @@ public class nameAlgorithm : MonoBehaviour {
 				lines.Insert(Iter-1,addLine(list_of_vertexs[Iter-1],list_of_vertexs[Iter+1],State_of_Line.Without_Restrictions));
 				list_of_vertexs.RemoveAt(Iter);
 				Iter--;
-				if(Iter<=0)
-					Iter=1;
+				if(Iter<0)
+					Iter=0;
 				continue;
 			}
 			Iter++;
 		}
+		print (Iter);
 		//contr.Delete_vertex (ver);
 	}
 	//=================================Last==============================================
 	public void Last()
 	{
+	}
+	public void setAlgorihtm(_NameAlgorithm name)
+	{
+		GetComponent<UnityEngine.UI.Scrollbar> ().value=((float)name)/lenght;
+		Set ();
 	}
 }
