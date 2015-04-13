@@ -13,7 +13,6 @@ public class File_Controller : MonoBehaviour {
 	public float deltaRefresh=10f;
 	public Animator anim;
 	public Controller contr;
-	public string startFile = "Mynamesparta";
 
 	private float size_of_Panel;
 	private VerticalLayoutGroup verticalLG;
@@ -28,7 +27,8 @@ public class File_Controller : MonoBehaviour {
 		verticalLG = GetComponent<VerticalLayoutGroup> ();
 		directory = new DirectoryInfo ("Assets//docs//Points_information");
 		list_of_file = new List<File_Input> ();
-		StartCoroutine ("_RefreshFile");
+		//StartCoroutine ("_RefreshFile");
+		RefreshFile();
 	}
 	void Update()
 	{
@@ -44,8 +44,6 @@ public class File_Controller : MonoBehaviour {
 		if(isFirst)
 		{
 			isFirst=false;
-			RefreshFile();
-			Read(startFile);
 		}
 	}
 	IEnumerator _RefreshFile()
@@ -183,6 +181,7 @@ public class File_Controller : MonoBehaviour {
 	{
 		foreach(File_Input file in list_of_file)
 		{
+			//print(file.getName().Replace(" ","")+"=="+name);
 			if(file.getName().Replace(" ","")==name)
 			{
 				List<Vector3> list=file.Read();

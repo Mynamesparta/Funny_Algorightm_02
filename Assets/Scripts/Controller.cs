@@ -70,6 +70,9 @@ public class Controller : MonoBehaviour {
 		//even = this.GetComponent<Event_System> ();
 		//button_Chose.SetActive(false);
 		_canvas = SCRIPTS.canvas.GetComponent<Canvas> ();
+	}
+	void Start()
+	{
 		SCRIPTS.algorightm.setAlgorihtm (startAgorithm);
 		SCRIPTS.Fcon.Read (startFile);
 	}

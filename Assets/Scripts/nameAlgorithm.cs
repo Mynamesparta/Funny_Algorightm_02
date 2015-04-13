@@ -5,13 +5,21 @@ using System.Collections.Generic;
 
 [System.Serializable]
 public enum _NameAlgorithm{Kyle_Kirkpatrick=3,Andrew_Edwin,Graham,Last };
-
+[System.Serializable]
+public struct Colors_For_Algorithm
+{
+	public Color sGraham, eGraham;
+	public Color sLast,eLast;
+}
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
 	public Text text_name;
-	public delegate void Algorightm();
+	public Colors_For_Algorithm COLORS;
+
+	[System.NonSerialized]
 	public Vertex vertex_for_test;
-	public Color start_for_algorithm, end_for_algorithm;
+
+	public delegate void Algorightm();
 	private _NameAlgorithm state;
 	private Recorder record;
 	private int lenght=6;
@@ -19,7 +27,7 @@ public class nameAlgorithm : MonoBehaviour {
 	void Awake()
 	{
 		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
-		setAlgorihtm (_NameAlgorithm.Graham);
+		//setAlgorihtm (_NameAlgorithm.Graham);
 	}
 	public void  Start_Algoritghm()//Vertex StartVertex)
 	{
@@ -66,7 +74,7 @@ public class nameAlgorithm : MonoBehaviour {
 			algo=Andrew_Edwin;
 			return;
 		}
-		if(index<8.33333333333333333333333333333333f)
+		if(index<0.833333333333333333333333333333333f)
 		{
 			text_name.text="Graham ";
 			state=_NameAlgorithm.Graham ;
@@ -128,6 +136,11 @@ public class nameAlgorithm : MonoBehaviour {
 				break;
 		}
 		return vertexs;
+	}
+	public void setAlgorihtm(_NameAlgorithm name)
+	{
+		GetComponent<UnityEngine.UI.Scrollbar> ().value=((float)name)/lenght;
+		Set ();
 	}
 	//=====================================Kyle=Kirkpatrick================
 	List<Vector3> fun;
@@ -385,10 +398,10 @@ public class nameAlgorithm : MonoBehaviour {
 		List<Line> lines = new List<Line> ();
 		for (int i=0; i<vertexs.Length-1; i++) 
 		{
-			addLine(center,vertexs[i].getPos(),State_of_Line.Without_Restrictions).setColor(start_for_algorithm,end_for_algorithm);
+			addLine(center,vertexs[i].getPos(),State_of_Line.Without_Restrictions).setColor(COLORS.sGraham,COLORS.eGraham);
 			lines.Add(addLine(vertexs[i],vertexs[i+1],State_of_Line.Without_Restrictions));
 		}
-		addLine(center,vertexs[vertexs.Length-1].getPos(),State_of_Line.Without_Restrictions).setColor(start_for_algorithm,end_for_algorithm);
+		addLine(center,vertexs[vertexs.Length-1].getPos(),State_of_Line.Without_Restrictions).setColor(COLORS.sGraham,COLORS.eGraham);
 		lines.Add(addLine(vertexs[vertexs.Length-1],vertexs[0],State_of_Line.Without_Restrictions));
 		List<Vector3> list_of_vertexs = new List<Vector3> ();
 		for(int i=0;i<vertexs.Length;i++)
@@ -406,8 +419,8 @@ public class nameAlgorithm : MonoBehaviour {
 			if(Iter==0)
 			{
 				print(list_of_vertexs[1].ToString()+list_of_vertexs[list_of_vertexs.Count-1].ToString()+list_of_vertexs[0].ToString());
-				if(!it_in_Left_side(list_of_vertexs[1],
-				                    list_of_vertexs[list_of_vertexs.Count-1],
+				if(it_in_Left_side(list_of_vertexs[list_of_vertexs.Count-1],
+				                    list_of_vertexs[1],
 				                    list_of_vertexs[0]))
 				{
 					addLine(lines[lines.Count-1],State_of_Line.End_Time);
@@ -427,8 +440,8 @@ public class nameAlgorithm : MonoBehaviour {
 			}
 			if(Iter==list_of_vertexs.Count-1)
 			{
-				if(!it_in_Left_side(list_of_vertexs[0],
-				                    list_of_vertexs[list_of_vertexs.Count-2],
+				if(it_in_Left_side(list_of_vertexs[list_of_vertexs.Count-2],
+				                    list_of_vertexs[0],
 				                    list_of_vertexs[list_of_vertexs.Count-1]))
 				{
 					addLine(lines[lines.Count-2],State_of_Line.End_Time);
@@ -447,8 +460,8 @@ public class nameAlgorithm : MonoBehaviour {
 				}
 				continue;
 			}
-			if(!it_in_Left_side(list_of_vertexs[Iter+1],
-			                    list_of_vertexs[Iter-1],
+			if(it_in_Left_side(list_of_vertexs[Iter-1],
+			                    list_of_vertexs[Iter+1],
 			                    list_of_vertexs[Iter]))
 			{
 				addLine(lines[Iter-1],State_of_Line.End_Time);
@@ -468,12 +481,94 @@ public class nameAlgorithm : MonoBehaviour {
 		//contr.Delete_vertex (ver);
 	}
 	//=================================Last==============================================
+	public float Area (Vector3 a,Vector3 b)
+	{
+		return 0.5f * Mathf.Abs (a.x * b.y - a.y * b.x);
+	}
+	bool _Last(Vector3 left,Vector3 right,List<Vertex> vertexs)
+	{
+		if (vertexs.Count == 0)
+			return false;
+		Vector3 point;
+		if(vertexs.Count==1)
+		{
+			vertexs[0].setColor(2);
+			point = vertexs[0].getPos ();
+			addLine (left, point, State_of_Line.Without_Restrictions);//.setColor (COLORS.sLast, COLORS.eLast);
+			addLine (right, point, State_of_Line.Without_Restrictions);//.setColor (COLORS.sLast, COLORS.eLast);
+			return true;
+		}
+		int Index_of_max=0;
+		float maxArea=Area(left-vertexs[0].getPos(),right-vertexs[0].getPos());
+		float area;
+		for(int i=1; i<vertexs.Count;i++)
+		{
+			area=Area(left-vertexs[i].getPos(),right-vertexs[i].getPos());
+			if(maxArea<area)
+			{
+				maxArea=area;
+				Index_of_max=i;
+			}
+		}
+		vertexs [Index_of_max].setColor (2);
+		point = vertexs [Index_of_max].getPos ();
+		vertexs.RemoveAt (Index_of_max);
+		Line line_1 = addLine (left, point, State_of_Line.Without_Restrictions);
+		Line line_2 = addLine (right, point, State_of_Line.Without_Restrictions);
+
+		List<Vertex> leftList=new List<Vertex>(), rightList=new List<Vertex>();
+
+		foreach(Vertex vertex in vertexs)
+		{
+			if(it_in_Left_side(left,point,vertex.getPos()))
+			{
+				leftList.Add(vertex);
+			}
+			else
+			{
+				if(!it_in_Left_side(right,point,vertex.getPos()))
+				{
+					rightList.Add(vertex);
+				}
+			}
+		}//.setColor (COLORS.sLast, COLORS.eLast);
+		if(_Last (left, point, leftList))//
+		{
+			line_1.setColor (COLORS.sLast, COLORS.eLast);
+		}
+		if(_Last (point, right, rightList))
+		{
+			line_2.setColor (COLORS.sLast, COLORS.eLast);
+		}
+		return true;
+	}
+	List<Vertex> resultLast;
 	public void Last()
 	{
-	}
-	public void setAlgorihtm(_NameAlgorithm name)
-	{
-		GetComponent<UnityEngine.UI.Scrollbar> ().value=((float)name)/lenght;
-		Set ();
+		Vertex[] vertexs=contr.getVertexs ().ToArray();
+		vertexs = Sort (vertexs, _isGreaterAndrew_Edwin);
+		List<Vertex> Up=new List<Vertex>(), Down=new List<Vertex>();
+		Vertex left=vertexs[0], right=vertexs[vertexs.Length-1];
+		addLine (left, right, State_of_Line.Without_Restrictions).setColor (COLORS.sLast, COLORS.eLast);
+		for(int i=1;i<vertexs.Length-1;i++)
+		{
+			if(it_in_Left_side(left.getPos(),right.getPos(),vertexs[i].getPos()))
+			{
+				Up.Add(vertexs[i]);
+				vertexs[i].setColor(1);
+			}
+			else
+			{
+				Down.Add(vertexs[i]);
+				vertexs[i].setColor(3);
+			}
+		}
+		resultLast = new List<Vertex> ();
+		_Last (left.getPos(), right.getPos(), Up);
+		foreach(Vertex vertex in vertexs)
+		{
+
+		}
+		_Last (right.getPos (), left.getPos (), Down);
 	}
 }

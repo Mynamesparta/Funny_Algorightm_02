@@ -38,11 +38,19 @@ public class ListofScenario
 			vertex.setColor(0);
 		}
 	}
+	public bool isPoint()
+	{
+		if (vertex != null)
+			return true;
+		else
+			return false;
+	}
 }
 enum State_of_Recorder{Create,Play,Block};
 public class Recorder : MonoBehaviour {
-	public float PauseTime;
-	public int Speed=2;
+	public float PauseTimeForLine;
+	public float PauseTimeForPoint;
+	public int 	 Speed=2;
 
 	private State_of_Recorder state = State_of_Recorder.Play;
 
@@ -76,15 +84,19 @@ public class Recorder : MonoBehaviour {
 		//print ("Test");
 		for(;Iteration<Scenario.Count;Iteration++)
 		{
+			if(Scenario[Iteration].isPoint())
+				yield return new WaitForSeconds(PauseTimeForPoint);
+			else
+				yield return new WaitForSeconds(PauseTimeForLine);
+			while(!isTimetoPlay)
+				yield return new WaitForSeconds(0.1f);
+
 			Scenario[Iteration].Play();
-			//print ("iteration:"+Iteration);
 			if(Scenario[Iteration].WithoutPause)
 			{
 				continue;
 			}
-			yield return new WaitForSeconds(PauseTime);
-			while(!isTimetoPlay)
-				yield return new WaitForSeconds(0.1f);
+			//print ("iteration:"+Iteration);
 		}
 		//isTimetoPlay = false;
 	}
