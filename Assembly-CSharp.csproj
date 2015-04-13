@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Background.cs" />
+     <Compile Include="Assets\Scripts\Binary_search_tree.cs" />
      <Compile Include="Assets\Scripts\Canvas.cs" />
      <Compile Include="Assets\Scripts\Canvas_Text_Field.cs" />
      <Compile Include="Assets\Scripts\Controller.cs" />

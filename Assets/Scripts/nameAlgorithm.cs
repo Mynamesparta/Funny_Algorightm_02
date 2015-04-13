@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
-public enum _NameAlgorithm{Kyle_Kirkpatrick=3,Andrew_Edwin,Graham,Last };
+public enum _NameAlgorithm{Fortune=0,Kyle_Kirkpatrick=3,Andrew_Edwin,Graham,Last };
 [System.Serializable]
 public struct Colors_For_Algorithm
 {
@@ -28,6 +28,7 @@ public class nameAlgorithm : MonoBehaviour {
 	{
 		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
 		//setAlgorihtm (_NameAlgorithm.Graham);
+		_Test ();
 	}
 	public void  Start_Algoritghm()//Vertex StartVertex)
 	{
@@ -45,14 +46,28 @@ public class nameAlgorithm : MonoBehaviour {
 	}
 	static void _Test()
 	{
+		Binary_search_tree list=new Binary_search_tree();
+		//list<<5f<<3f<<10f<<6f<<7f<<1f<<2f;
+		print ("start");
+		list.Add (5);
+		list.Add (2);
+		list.Add(10);
+		list.Add (6);
+		list.Add (7);
+		list.Add (1);
+		list.Print ();
+		list.Delete (10);
+		print ("====");
+		list.Print ();
 	}
 	public void Set()
 	{
 		float index = GetComponent<UnityEngine.UI.Scrollbar> ().value;
 		if (index < 0.1666666f) 
 		{
-			text_name.text="Kyle Kirkpatrick";
-			state=_NameAlgorithm.Kyle_Kirkpatrick;
+			text_name.text="Fortune";
+			state=_NameAlgorithm.Fortune;
+			algo=Fortune;
 			return;
 		}
 		if(index<0.33333333333333333333333333333334f)
@@ -141,6 +156,10 @@ public class nameAlgorithm : MonoBehaviour {
 	{
 		GetComponent<UnityEngine.UI.Scrollbar> ().value=((float)name)/lenght;
 		Set ();
+	}
+	//=====================================Fortune========================
+	public void Fortune()
+	{
 	}
 	//=====================================Kyle=Kirkpatrick================
 	List<Vector3> fun;

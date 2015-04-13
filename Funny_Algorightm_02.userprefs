@@ -1,9 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\nameAlgorithm.cs">
     <Files>
-      <File FileName="Assets\Scripts\nameAlgorithm.cs" Line="14" Column="30" />
-      <File FileName="Assets\Scripts\File_Controller.cs" Line="17" Column="2" />
+      <File FileName="Assets\Scripts\Binary_search_tree.cs" Line="241" Column="15" />
+      <File FileName="Assets\Scripts\nameAlgorithm.cs" Line="57" Column="16" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
