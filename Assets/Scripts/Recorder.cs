@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+//using System.Exception;
 public class ListofScenario
 {
 	public List<Vector3> function;
@@ -27,7 +28,7 @@ public class ListofScenario
 	{
 		if(line!=null)
 		{
-			if(state==State_of_Line.Without_Restrictions)
+			if(state!=State_of_Line.End_Time)
 				line.state = State_of_Line.End_Time;
 			else
 				line.state = State_of_Line.Without_Restrictions;
@@ -47,15 +48,22 @@ public class ListofScenario
 	}
 }
 enum State_of_Recorder{Create,Play,Block};
+[System.Serializable]
+public struct PauseTime
+{
+	public float minForLine;
+	public float maxForLine;
+	public float ForPoint;
+}
 public class Recorder : MonoBehaviour {
-	public float PauseTimeForLine;
-	public float PauseTimeForPoint;
+	public PauseTime PAUSE_TIME;
 	public int 	 Speed=2;
 
 	private State_of_Recorder state = State_of_Recorder.Play;
 
 	private List<ListofScenario> Scenario;
 	private ListofScenario current_list;
+	private float lineSpeed;
 	private int Iteration=0;
 	private bool isTimetoPlay=false;
 	private bool withoutPause=false;
@@ -63,6 +71,7 @@ public class Recorder : MonoBehaviour {
 	void Awake()
 	{
 		Scenario = new List<ListofScenario> ();
+		setSpeed (0);
 	}
 	void Update()
 	{
@@ -85,21 +94,30 @@ public class Recorder : MonoBehaviour {
 		for(;Iteration<Scenario.Count;Iteration++)
 		{
 			if(Scenario[Iteration].isPoint())
-				yield return new WaitForSeconds(PauseTimeForPoint);
+				yield return new WaitForSeconds(PAUSE_TIME.ForPoint);
 			else
-				yield return new WaitForSeconds(PauseTimeForLine);
+				yield return new WaitForSeconds(lineSpeed);
 			while(!isTimetoPlay)
 				yield return new WaitForSeconds(0.1f);
-
+			//
+			if(Iteration>=Scenario.Count)
+			{
+				print("Welcome to League oF BOOMMMMMMMM!!!!");
+				break;
+			}
+			//
 			Scenario[Iteration].Play();
 			if(Scenario[Iteration].WithoutPause)
 			{
 				continue;
 			}
-			//print ("iteration:"+Iteration);
+
+			
 		}
-		//isTimetoPlay = false;
+		//print ("iteration:"+Iteration);
 	}
+	//isTimetoPlay = false;
+
 	public void StartCreate()
 	{
 		StopAllCoroutines ();
@@ -347,7 +365,10 @@ public class Recorder : MonoBehaviour {
 			return;*/
 		withoutPause = b;
 	}
-
+	public void setSpeed(float s)
+	{
+		lineSpeed = PAUSE_TIME.maxForLine + (PAUSE_TIME.minForLine - PAUSE_TIME.maxForLine) * s;
+	}
 
 
 }

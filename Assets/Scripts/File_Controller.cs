@@ -167,6 +167,9 @@ public class File_Controller : MonoBehaviour {
 	{
 		bool b = !anim.GetBool ("inScene");
 		anim.SetBool("inScene",b);
+	}
+	public void _setActive(bool b)
+	{
 		gameObject.SetActive (b);
 	}
 	public void  readCurrent()

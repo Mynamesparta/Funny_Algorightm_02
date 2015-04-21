@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-public enum State_of_Line{Const_Lenght,Without_Restrictions,End_Time};
+public enum State_of_Line{Const_Lenght,Without_Restrictions,Flesh,End_Time};
 public class Line : MonoBehaviour {
 	public float speed=100f;
 	public float magnitude=10f;
 	public float magnitude_speed=1f;
 	public int const_length=10;
+	public static bool magicSin=true;
 	public static bool isTimeForSin=false;
 	public State_of_Line state=State_of_Line.Without_Restrictions;
 	//private Vector3[]
@@ -20,6 +21,7 @@ public class Line : MonoBehaviour {
 	float distance;
 	bool isChanged;
 	bool isDestroyTime=false;
+	bool isFleshTime=true;
 	void Awake()
 	{
 		line_renderer = GetComponent<LineRenderer> ();
@@ -55,6 +57,12 @@ public class Line : MonoBehaviour {
 	}
 	void Update() 
 	{
+		if(!magicSin)
+		{
+			list=function;
+			isTimeForSin=false;
+			return;
+		}
 		switch(state)
 		{
 		case State_of_Line.Without_Restrictions:
@@ -86,6 +94,15 @@ public class Line : MonoBehaviour {
 			}
 			break;
 		}
+		case State_of_Line.Flesh:
+		{
+			if(isFleshTime)
+			{
+				Build();
+				isFleshTime=false;
+			}
+			return;
+		}
 		}
 		if (Index >= function.Count||function.Count<=0)
 		{
@@ -115,15 +132,11 @@ public class Line : MonoBehaviour {
 		}
 		if(!isChanged)
 		{
-			//print("1:"+Vector3.MoveTowards(list[lastIndex],function[Index],_speed).ToString());
 			list.Add (Vector3.MoveTowards(list[lastIndex],function[Index],_speed));
-			//Add(Vector3.MoveTowards(list[lastIndex],function[Index],_speed));
 		}
 		else
 		{
-			//print("2:"+Vector3.MoveTowards(function[Index-1],function[Index],_speed).ToString());
 			list.Add(Vector3.MoveTowards(function[Index-1],function[Index],_speed));
-			//Add (Vector3.MoveTowards(function[Index-1],function[Index],_speed));
 		}
 	}
 	int Index_of_Wave=1;
@@ -187,10 +200,12 @@ public class Line : MonoBehaviour {
 	void toBegin()
 	{
 		isDestroyTime=false;
+		isFleshTime = true;
 		Index=1;
 		Index_of_Wave=1;
 		min_Index=0;
 		line_renderer.SetVertexCount(0);
+		list.Clear();
 	}
 	public void addFuctionPoint(Vector3 vec)
 	{
@@ -202,12 +217,46 @@ public class Line : MonoBehaviour {
 	public void addFunctionPoints(List<Vector3> _list)
 	{
 		function = _list;
-		list.Add (_list [0]);
 		toBegin ();
+		list.Add (_list [0]);
 	}
 	public void setColor(Color begin,Color end)
 	{
 		line_renderer.SetColors (begin, end);
+	}
+	void Build()
+	{
+		while (true) 
+		{
+			if (Index >= function.Count || function.Count <= 0) {
+				if (isDestroyTime && state == State_of_Line.Const_Lenght)
+					state = State_of_Line.End_Time;
+				return;
+			}
+			if (list.Count <= 0)
+				return;
+			lastIndex = list.Count - 1;
+			_speed = speed * 0.0197486f;//*Time.deltaTime;
+			//print (list [lastIndex].ToString() + function [Index].ToString());
+			distance = Vector3.Distance (list [lastIndex], function [Index]);
+			//print (distance+">"+Time.deltaTime);
+			isChanged = false;
+			while (distance<_speed) {
+				_speed -= distance;
+				isChanged = true;
+				Index++;
+				if (Index == function.Count) {
+					Add (function [Index - 1]);
+					return;
+				}
+				distance = Vector3.Distance (function [Index - 1], function [Index]);
+			}
+			if (!isChanged) {
+				list.Add (Vector3.MoveTowards (list [lastIndex], function [Index], _speed));
+			} else {
+				list.Add (Vector3.MoveTowards (function [Index - 1], function [Index], _speed));
+			}
+		}
 	}
 
 }

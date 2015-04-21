@@ -35,6 +35,7 @@ public class Controller : MonoBehaviour {
 	//public GameObject button_Chose;
 	//public Transform center;
 	public uint maxNumberOfVertex=10;
+	public bool isTimetoMagicSin=true;
 	//public float radius_of_Arey=1;
 	public float pixelH;
 	public float pixelW;
@@ -70,6 +71,7 @@ public class Controller : MonoBehaviour {
 		//even = this.GetComponent<Event_System> ();
 		//button_Chose.SetActive(false);
 		_canvas = SCRIPTS.canvas.GetComponent<Canvas> ();
+		Line.magicSin = isTimetoMagicSin;
 	}
 	void Start()
 	{
@@ -105,6 +107,7 @@ public class Controller : MonoBehaviour {
 			_canvas.TimeToRecorder(false);
 			_canvas.inScene(name_of_Button.NameAlgorithm,true);
 			_canvas.inScene(name_of_Button.FileList,true);
+			_canvas.inScene(name_of_Button.Recorder_speed,false);
 			break;
 		}
 		}
@@ -444,6 +447,7 @@ public class Controller : MonoBehaviour {
 		SCRIPTS.recorder.StartCreate ();
 		state = State_of_Controller.Play;
 		_canvas.Edit (name_of_Button.Play, true);
+		_canvas.inScene(name_of_Button.Recorder_speed,true);
 		_canvas.inScene(name_of_Button.FileList,false);
 		//_canvas.inScene(4,true);
 		_canvas.TimeToRecorder (true);

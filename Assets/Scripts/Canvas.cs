@@ -2,7 +2,8 @@
 using System.Collections;
 using System;
 [System.Serializable]
-public enum name_of_Button{NameAlgorithm,Edit,Play,Pause,Rewinding01,Rewinding02,toBegin,toEnd,FileList};
+public enum name_of_Button{NameAlgorithm=0,Edit=1,Play=2,Pause=3,Rewinding01=4,Rewinding02=5,
+							toBegin=6,toEnd=7,Recorder_speed=8,FileList=9};
 public class Canvas : MonoBehaviour {
 
 	public Recorder recorder;
@@ -24,46 +25,7 @@ public class Canvas : MonoBehaviour {
 	}
 	int getNumber_of_Button(name_of_Button name)
 	{
-		switch(name)
-		{
-		case name_of_Button.NameAlgorithm:
-		{
-			return 0;
-		}
-		case name_of_Button.Edit:
-		{
-			return 1;
-		}
-		case name_of_Button.Play:
-		{
-			return 2;
-		}
-		case name_of_Button.Pause:
-		{
-			return 3;
-		}
-		case name_of_Button.Rewinding01:
-		{
-			return 4;
-		}
-		case name_of_Button.Rewinding02:
-		{
-			return 5;
-		}
-		case name_of_Button.toBegin:
-		{
-			return 6;
-		}
-		case name_of_Button.toEnd:
-		{
-			return 7;
-		}
-		case name_of_Button.FileList:
-		{
-			return 8;
-		}
-
-		}
+		return (int)name;
 		print ("something wrong:name of Button null");
 		return -1;
 	}

@@ -54,15 +54,16 @@
      <Compile Include="Assets\Scripts\Edge.cs" />
      <Compile Include="Assets\Scripts\File_Controller.cs" />
      <Compile Include="Assets\Scripts\File_Input.cs" />
+     <Compile Include="Assets\Scripts\Fortune.cs" />
      <Compile Include="Assets\Scripts\Line.cs" />
      <Compile Include="Assets\Scripts\Recorder.cs" />
      <Compile Include="Assets\Scripts\Vertex.cs" />
      <Compile Include="Assets\Scripts\nameAlgorithm.cs" />
      <Compile Include="Assets\Test.cs" />
-     <None Include="Assets\docs\Points_information\None_name.txt" />
      <None Include="Assets\docs\Points_information\Circle.txt" />
      <None Include="Assets\docs\Points_information\Mynamesparta.txt" />
      <None Include="Assets\docs\Points_information\Chaos.txt" />
+     <None Include="Assets\docs\Points_information\Point.txt" />
      <None Include="Assets\docs\Points_information\Line.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

@@ -11,11 +11,17 @@ public struct Colors_For_Algorithm
 	public Color sGraham, eGraham;
 	public Color sLast,eLast;
 }
+[System.Serializable]
+public struct RectScene
+{
+	public float minW, maxW, minH, maxH;
+}
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
 	public Text text_name;
 	public Colors_For_Algorithm COLORS;
-
+	public RectScene standartRect;
+	public float delta_X=1f;
 	[System.NonSerialized]
 	public Vertex vertex_for_test;
 
@@ -24,11 +30,12 @@ public class nameAlgorithm : MonoBehaviour {
 	private Recorder record;
 	private int lenght=6;
 	Algorightm algo;
+	Line line,parabola;
 	void Awake()
 	{
 		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
 		//setAlgorihtm (_NameAlgorithm.Graham);
-		_Test ();
+		//_Test ();
 	}
 	public void  Start_Algoritghm()//Vertex StartVertex)
 	{
@@ -37,6 +44,7 @@ public class nameAlgorithm : MonoBehaviour {
 			print("vertexs:null");
 			return;
 		}
+		record.StartCreate ();
 		if (algo != null)
 			algo ();
 		else
@@ -46,19 +54,6 @@ public class nameAlgorithm : MonoBehaviour {
 	}
 	static void _Test()
 	{
-		Binary_search_tree list=new Binary_search_tree();
-		//list<<5f<<3f<<10f<<6f<<7f<<1f<<2f;
-		print ("start");
-		list.Add (5);
-		list.Add (2);
-		list.Add(10);
-		list.Add (6);
-		list.Add (7);
-		list.Add (1);
-		list.Print ();
-		list.Delete (10);
-		print ("====");
-		list.Print ();
 	}
 	public void Set()
 	{
@@ -111,6 +106,16 @@ public class nameAlgorithm : MonoBehaviour {
 		}
 		record.Add(line,state,fun);
 	}
+	public void addLine(Line line, State_of_Line state, Vector3 begin,Vector3 end)
+	{
+		if (begin != null && end != null) 
+		{
+			fun = new List<Vector3> ();
+			fun.Add (begin);
+			fun.Add (end);
+		}
+		record.Add(line,state,fun);
+	}
 	public Line addLine(Vertex begin,Vertex end,State_of_Line state)
 	{
 		fun=new List<Vector3>();//Vector3
@@ -129,6 +134,21 @@ public class nameAlgorithm : MonoBehaviour {
 		record.Add(line,state,fun);
 		return line;
 	}
+	public Line addParabola(float[] cFun,State_of_Line state,RectScene rect)
+	{
+		fun = Fortune_Fuc.buildFun (cFun, rect,delta_X);
+		Line line = contr.addLine ();
+		record.Add (line, state, fun);
+		return line;
+	}
+	public Line addParabola(Line line,float[] cFun,State_of_Line state,RectScene rect)
+	{
+		fun = Fortune_Fuc.buildFun (cFun, rect,delta_X);
+		//Line line = contr.addLine ();
+		record.Add (line, state, fun);
+		return line;
+	}
+
 	public delegate bool isGreater(Vertex one,Vertex two); 
 	public Vertex[] Sort(Vertex[] vertexs,isGreater ig)
 	{
@@ -157,9 +177,30 @@ public class nameAlgorithm : MonoBehaviour {
 		GetComponent<UnityEngine.UI.Scrollbar> ().value=((float)name)/lenght;
 		Set ();
 	}
-	//=====================================Fortune========================
-	public void Fortune()
+	//=====================================Fortune================
+	void Update()
 	{
+		//current_pos_line = -1000;
+		//print (test.ToString () + " " + (current_pos_line < 1000).ToString ());
+
+
+	}
+	float current_pos_line =-200;
+	bool test=false;
+	public void Fortune ()
+	{
+		line = contr.addLine ();parabola=contr.addLine();
+		test = true;
+		//
+		List<Vertex> list = contr.getVertexs ();
+		float _y = current_pos_line;
+		addLine (new Vector3 (-500, _y), new Vector3 (500, _y), State_of_Line.Flesh);
+		for (int i=0; i<list.Count; i++) 
+		{
+			float[] fun = Fortune_Fuc.buildParabola (list [i].getPos (), _y);
+			addParabola (fun, State_of_Line.Flesh, standartRect);
+		}
+		//
 	}
 	//=====================================Kyle=Kirkpatrick================
 	List<Vector3> fun;
