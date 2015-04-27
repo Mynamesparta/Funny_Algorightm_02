@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using Fortune_;
 
 [System.Serializable]
 public enum _NameAlgorithm{Fortune=0,Kyle_Kirkpatrick=3,Andrew_Edwin,Graham,Last };
@@ -14,6 +15,7 @@ public struct Colors_For_Algorithm
 [System.Serializable]
 public struct RectScene
 {
+	public static float begin_minW, begin_maxW, begin_minH, begin_maxH;
 	public float minW, maxW, minH, maxH;
 }
 public class nameAlgorithm : MonoBehaviour {
@@ -24,11 +26,13 @@ public class nameAlgorithm : MonoBehaviour {
 	public float delta_X=1f;
 	[System.NonSerialized]
 	public Vertex vertex_for_test;
+	public bool FullBeachLine=true;
 
 	public delegate void Algorightm();
 	private _NameAlgorithm state;
 	private Recorder record;
 	private int lenght=6;
+	private float lenght_of_SweepLine=1000;
 	Algorightm algo;
 	Line line,parabola;
 	void Awake()
@@ -36,6 +40,12 @@ public class nameAlgorithm : MonoBehaviour {
 		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
 		//setAlgorihtm (_NameAlgorithm.Graham);
 		//_Test ();
+		RectScene.begin_maxH = standartRect.maxH;
+		RectScene.begin_minH = standartRect.minH;
+		RectScene.begin_maxW = standartRect.maxW;
+		RectScene.begin_minW = standartRect.minW;
+		Fortune_.Event.NA = this;
+
 	}
 	public void  Start_Algoritghm()//Vertex StartVertex)
 	{
@@ -62,7 +72,7 @@ public class nameAlgorithm : MonoBehaviour {
 		{
 			text_name.text="Fortune";
 			state=_NameAlgorithm.Fortune;
-			algo=Fortune;
+			algo=Fortune_algorithm;
 			return;
 		}
 		if(index<0.33333333333333333333333333333334f)
@@ -100,52 +110,53 @@ public class nameAlgorithm : MonoBehaviour {
 	{
 		if (begin != null && end != null) 
 		{
-			fun = new List<Vector3> ();
-			fun.Add (begin.getPos ());
-			fun.Add (end.getPos ());
+			_fun = new List<Vector3> ();
+			_fun.Add (begin.getPos ());
+			_fun.Add (end.getPos ());
 		}
-		record.Add(line,state,fun);
+		record.Add(line,state,_fun);
 	}
 	public void addLine(Line line, State_of_Line state, Vector3 begin,Vector3 end)
 	{
 		if (begin != null && end != null) 
 		{
-			fun = new List<Vector3> ();
-			fun.Add (begin);
-			fun.Add (end);
+			_fun = new List<Vector3> ();
+			_fun.Add (begin);
+			_fun.Add (end);
 		}
-		record.Add(line,state,fun);
+		record.Add(line,state,_fun);
 	}
 	public Line addLine(Vertex begin,Vertex end,State_of_Line state)
 	{
-		fun=new List<Vector3>();//Vector3
-		fun.Add(begin.getPos());
-		fun.Add(end.getPos());
+		_fun=new List<Vector3>();//Vector3
+		_fun.Add(begin.getPos());
+		_fun.Add(end.getPos());
 		Line line = contr.addLine ();
-		record.Add(line,state,fun);
+		record.Add(line,state,_fun);
 		return line;
 	}
 	public Line addLine(Vector3 begin,Vector3 end,State_of_Line state)
 	{
-		fun=new List<Vector3>();
-		fun.Add(begin);
-		fun.Add(end);
+		_fun=new List<Vector3>();
+		_fun.Add(begin);
+		_fun.Add(end);
 		Line line = contr.addLine ();
-		record.Add(line,state,fun);
+		record.Add(line,state,_fun);
 		return line;
 	}
-	public Line addParabola(float[] cFun,State_of_Line state,RectScene rect)
+	public Line addParabola(Fortune_.Fun fun,State_of_Line state,RectScene rect)
 	{
-		fun = Fortune_Fuc.buildFun (cFun, rect,delta_X);
+		List<Vector3> _fun = Fortune_.Function.buildFun (fun, rect,delta_X);
+		MonoBehaviour.print (_fun.ToString () + " _fun");
 		Line line = contr.addLine ();
-		record.Add (line, state, fun);
+		record.Add (line, state, _fun);
 		return line;
 	}
-	public Line addParabola(Line line,float[] cFun,State_of_Line state,RectScene rect)
+	public  Line addParabola(Line line,Fortune_.Fun fun,State_of_Line state,RectScene rect)
 	{
-		fun = Fortune_Fuc.buildFun (cFun, rect,delta_X);
+		_fun = Fortune_.Function.buildFun (fun, rect,delta_X);
 		//Line line = contr.addLine ();
-		record.Add (line, state, fun);
+		record.Add (line, state, _fun);
 		return line;
 	}
 
@@ -185,25 +196,75 @@ public class nameAlgorithm : MonoBehaviour {
 
 
 	}
-	float current_pos_line =-200;
 	bool test=false;
-	public void Fortune ()
+	public delegate void reBuild(float y);
+	public delegate void Build ();
+	public event reBuild re_build;
+	public event Build build;
+	public void Fortune_algorithm ()
 	{
-		line = contr.addLine ();parabola=contr.addLine();
-		test = true;
-		//
-		List<Vertex> list = contr.getVertexs ();
-		float _y = current_pos_line;
-		addLine (new Vector3 (-500, _y), new Vector3 (500, _y), State_of_Line.Flesh);
-		for (int i=0; i<list.Count; i++) 
+		Line Sweep= addLine (new Vector3 (-lenght_of_SweepLine/2, 300), new Vector3 (lenght_of_SweepLine/2, 300), State_of_Line.Flesh);
+		Vertex[] vertexs=contr.getVertexs ().ToArray();
+		vertexs = Sort (vertexs, _isGreaterKyle_Kirkpatrick);
+		List<Fortune_.Event> list_of_Event=new List<Fortune_.Event>();
+
+		Binary_Tree.Binary_search_tree BTree = new Binary_Tree.Binary_search_tree (this);
+
+		//Binary_search_tree
+		for (int i=vertexs.Length-1; i>=0; i--) 
 		{
-			float[] fun = Fortune_Fuc.buildParabola (list [i].getPos (), _y);
-			addParabola (fun, State_of_Line.Flesh, standartRect);
+			var se = new Site_Event(vertexs[i]);
+			if(se==null)
+				print ("se==null");
+			list_of_Event.Add(se);
 		}
-		//
+		Fortune_.Fun function;
+		Fortune_.Site_Event siteE;
+		Fortune_.Vertex_Event vertexE;
+
+
+		foreach (Fortune_.Event ev in list_of_Event) 
+		{
+			addLine(Sweep,State_of_Line.Flesh,new Vector3 (-lenght_of_SweepLine/2, ev.Y-100), new Vector3 (lenght_of_SweepLine/2, ev.Y-100));
+			//print(ev.Y-5);
+			record.setWithoutPause(true);
+			switch(ev.getEvent())
+			{
+				case Fortune_.EVENT.Site:
+				{
+				//====================Site=Event================
+				siteE=(Fortune_.Site_Event) ev;
+				BTree.Add(siteE,ev.Y-100);
+				function=Fortune_.Function.buildParabola( siteE.getVector(),ev.Y-100);
+				if(false)
+				{
+					//addLine(new Vector3 (siteE.getVector().x, siteE.Y),new Vector3 (siteE.getVector().x, 300),State_of_Line.Flesh);
+				}
+				else
+				{
+					//addParabola(function,State_of_Line.Flesh,standartRect);
+				}
+				re_build(ev.Y-100);
+
+					break;
+				//===============================================
+				}
+				case Fortune_.EVENT.Vertex:
+				{
+				//============================Vertex=Event========
+					vertexE=(Fortune_.Vertex_Event)ev;
+					break;
+				//================================================
+				}
+			}
+			record.setWithoutPause(false);
+
+		}
+		if (build != null)
+		build ();
 	}
 	//=====================================Kyle=Kirkpatrick================
-	List<Vector3> fun;
+	List<Vector3> _fun;
 	bool isRightRotation(Vector3 last,Vertex begin,Vertex end)
 	{
 		Vector3 a = begin.getPos() - last;

@@ -157,11 +157,6 @@ public class Controller : MonoBehaviour {
 		Vector3 position = Input.mousePosition;
 		position = SCRIPTS.maincamera.ScreenToWorldPoint (position);
 		position.z = 0;
-		/*/
-		Vector3 position = new Vector3(Input.mousePosition.x*pixelW,Input.mousePosition.y*pixelH);
-		//print (position.y / Camera.main.pixelHeight);
-		position = position - new Vector3 (0.5f*Camera.main.pixelWidth*pixelW,0.5f*Camera.main.pixelHeight*pixelH,0f );
-		/*/
 		return position;
 	}
 	public Vector3 getDeltaMousePosition()

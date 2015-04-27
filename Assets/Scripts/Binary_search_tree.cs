@@ -1,282 +1,328 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+namespace Binary_Tree
+{
+	public struct Coners
+	{
+		public Fortune_.Site_Event left;
+		public Fortune_.Site_Event right;
 
-public struct Data
-{
-}
-public class Binary_search_tree:MonoBehaviour  
-{
-	public Branch tree;
-	public Branch Search(float Key)
-	{
-		Branch parent = tree;//, child;
-		if(parent==null)
-		{
-			return null;
-		}
-		while(true)
-		{
-			//print("search:"+parent.key);
-			if(parent.key==Key)
-			{
-				//зміна даних
-				return parent;
-			}
-			if (parent.key > Key)
-			{
-				if(parent.left==null)
-				{
-					return null;
-				}
-				parent=parent.left;
-			}
-			else
-			{
-				if(parent.right==null)
-				{
-					return null;
-				}
-				parent=parent.right;
-			}
-		}
-		return null;
 	}
-	public bool Add(float Key)//,Data data)
+	public class Binary_search_tree  
 	{
-		Branch parent = tree;//, child;
-		if(parent==null)
+		Branch tree;
+		static nameAlgorithm NA;
+		public Binary_search_tree(nameAlgorithm algo)
 		{
-			tree= new Branch();
-			tree.key=Key;
-			return true;
+			NA = algo;
+			Branch.NA = NA;
 		}
-		while(true)
+		//===================private==========================
+		void _normalized(Branch branch)
 		{
-			//print("add:"+parent.key);
-			if(parent.key==Key)
+			if(branch==null)
 			{
-				//parent.data=data;
-				return false;
+				//MonoBehaviour.print ("Branch==null");
+				return;
 			}
-			if (parent.key > Key)
+			if (branch.left_coner == null)
+				MonoBehaviour.print ("branch.left_coner==null");
+			bool isLeftBranch = branch.isLeftBranch;
+			MonoBehaviour.print ("=======================");
+			MonoBehaviour.print ("isLeftBranch:"+isLeftBranch.ToString());
+			if(branch.state==State_of_Branch.Node)
 			{
-				if(parent.left==null)
+				MonoBehaviour.print ("it s Node");
+				return;
+			}
+			Branch parent = branch.parent;
+			if(parent==null)
+				MonoBehaviour.print("2:parent==null");
+			while (parent!=null&&parent.isLeftBranch==isLeftBranch) 
+			{
+				MonoBehaviour.print("true");
+				if(isLeftBranch)
 				{
-					parent.left=new Branch();
-					//parent.left.parent=parent;
-					parent.left.key=Key;
-					return true;
+					MonoBehaviour.print ("leftConer");
+					parent.left_coner=branch.left_coner;
 				}
-				parent=parent.left;
+				else
+				{
+					MonoBehaviour.print ("rightConer");
+					parent.right_coner=branch.left_coner;
+				}
+				parent=parent.parent;
+			}
+
+			if(parent!=null)
+			{
+				MonoBehaviour.print("parent!=null");
+				if(isLeftBranch)
+				{
+					MonoBehaviour.print ("leftConer");
+					parent.left_coner=branch.left_coner;
+				}
+				else
+				{
+					MonoBehaviour.print ("rightConer");
+					parent.right_coner=branch.left_coner;
+				}
 			}
 			else
 			{
-				if(parent.right==null)
-				{
-					parent.right=new Branch();
-					//parent.right.parent=parent;
-					parent.right.key=Key;
-					return true;
-				}
-				parent=parent.right;
 			}
 		}
-		return false;
-	}
-	public bool Delete(float Key)
-	{
-		Branch parent = tree;
-		if(parent.key==Key)
+		float getLimit(Branch branch)
 		{
-			Branch child=parent;
-			if(child.left==null&&child.right==null)
+			if(branch.state==State_of_Branch.Node)
 			{
-				tree=null;
-				return true;
-			}
-			if(child.left!=null&&child.right==null)
-			{
-				tree=child.left;
-				return true;
-			}
-			if(child.left==null&&child.right!=null)
-			{
-				tree=child.right;
-				return true;
-			}
-			
-			if(child.left!=null&&child.right!=null)
-			{
-				if(child.right.left==null)
+				if (branch.isLeftBranch) 
 				{
-					child.right.left=child.left;
-					tree=child.right;
-					return true;
+					return branch.right_coner.X;
 				}
 				else
 				{
-					Branch p=child.right,c=p.left;
-					while(c.left!=null)
-					{
-						p=c;
-						c=p.left;
-					}
-					p.left=c.right;
-					c.right=child.right;
-					c.left=child.left;
-					tree=c;
-					
+					return branch.left_coner.X;
 				}
 			}
-			return true;
+			return branch.left_coner.X;
 		}
-		else
+		//======================public=============================
+		bool isFirstAdd=true;
+		public void Add(Fortune_.Site_Event data,float _y)
 		{
-			Branch child;
-			bool isLeft=false;
-			if(parent.key>Key)
+			MonoBehaviour.print ("hello new site");
+			float Key = data.X;
+			Coners coners=new Coners();
+			bool isFind = false;
+			if (data == null)
+				MonoBehaviour.print ("data==null");
+			if(isFirstAdd)
 			{
-				child=parent.left;
+				isFirstAdd=false;
+				//MonoBehaviour.print("new KING Site");
+				tree=new Branch();
+				tree.left_coner=data;
+				tree.state=State_of_Branch.Site;
+				return ;
 			}
 			else
 			{
-				child=parent.right;
-			}
-			while(true)
-			{
-				if(child==null)
-					return false;
-				if(child.key==Key)
-					break;
-				if(child.key>Key)
+				Branch parent,children;
+				parent=tree;
+				while(true)
 				{
-					parent=child;
-					child=parent.left;
-					isLeft=true;
-				}
-				else
-				{
-					parent=child;
-					child=parent.right;
-					isLeft=false;
-				}
-			}
-			if(child.left==null&&child.right==null)
-			{
-				if(isLeft)
-				{
-					parent.left=null;
-				}
-				else
-				{
-					parent.right=null;
-				}
-				return true;
-			}
-			if(child.left!=null&&child.right==null)
-			{
-				if(isLeft)
-				{
-					parent.left=child.left;
-				}
-				else
-				{
-					parent.right=child.left;
-				}
-				return true;
-			}
-			if(child.left==null&&child.right!=null)
-			{
-				if(isLeft)
-				{
-					parent.left=child.right;
-				}
-				else
-				{
-					parent.right=child.right;
-				}
-				return true;
-			}
-			
-			if(child.left!=null&&child.right!=null)
-			{
-				if(child.right.left==null)
-				{
-					child.right.left=child.left;
-					if(isLeft)
+					MonoBehaviour.print("State:"+parent.state.ToString());
+					if(parent.state==State_of_Branch.Site)
 					{
-						parent.left=child.right;
+						Branch branch=new Branch();
+						parent.left=branch;
+						parent.right=new Branch();
+						branch.left=new Branch();
+						branch.right=new Branch();
+
+						parent.right.parent=parent;
+						parent.left.parent=parent;
+						branch.left.parent=branch;
+						branch.right.parent=branch;
+
+						parent.state = branch.state = State_of_Branch.Node;
+						branch.left.state = branch.right.state = parent.right.state = State_of_Branch.Site;
+
+						branch.left.left_coner=parent.right.left_coner=parent.left_coner;
+						branch.right.left_coner=data;
+
+						parent.left_neighbour=branch;
+						branch.right_neighbour=parent;
+
+						if(parent.left_coner.X<Key)
+						{
+							MonoBehaviour.print ("Right");
+						}
+						else
+						{
+							MonoBehaviour.print("Left");
+						}
+						parent.left.isLeftBranch=true;
+						parent.right.isLeftBranch=false;
+						branch.left.isLeftBranch=true;
+						branch.right.isLeftBranch=false;
+						if(parent.left_coner==null)
+							MonoBehaviour.print("parent.left_coner==null");
+						_normalized(branch.left);
+						_normalized(branch.right);
+						_normalized(parent.right);
+						if(parent.left_coner==null||parent.right_coner==null)
+							MonoBehaviour.print ("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBag!");
+						break;
 					}
 					else
 					{
-						parent.right=child.right;
+						if(Key<parent.left.getLimit(_y))
+						{
+							parent=parent.left;
+							MonoBehaviour.print("Left");
+							continue;
+						}
+						if(parent.right.getLimit(_y)<Key)
+						{
+							parent=parent.right;
+							MonoBehaviour.print ("Right");
+							continue;
+						}
+						MonoBehaviour.print("I need some magic");
+						isFind=true;
+						return ;
 					}
-					return true;
+				}
+			}
+			return ;
+		}
+
+	}
+	public enum State_of_Branch{Site,Node};
+	public class Branch
+	{
+		bool isCheked;
+		public State_of_Branch state;
+		public bool isLeftBranch=true;
+		public Fortune_.Site_Event left_coner;
+		public Fortune_.Site_Event right_coner;
+		public Line leftParabola, rightParabola;
+		public float middle;
+		//public Fortune_.Site_Event data;
+		//float _key=0;
+		public Branch parent;
+		public Branch left;
+		public Branch right;
+
+		public Branch left_neighbour;
+		public Branch right_neighbour;
+
+		public static nameAlgorithm NA;
+		public Branch()
+		{
+			NA.re_build += reBuild;
+			NA.build += Build;
+		}
+		public void reBuild(float _y)
+		{
+			MonoBehaviour.print("Hello new reBuild:" + _y.ToString ());
+			if (state == State_of_Branch.Site)
+				return;
+			MonoBehaviour.print ("its node");
+			if (left_coner == null||right_coner==null) 
+			{
+				MonoBehaviour.print("left_coner==null");
+				return;
+			}
+			MonoBehaviour.print ("its norm");
+			isCheked = !(Fortune_.Function.buildParabola (ref left_coner, _y) ||
+				Fortune_.Function.buildParabola (ref right_coner, _y));
+			if (!isCheked) 
+			{
+				middle = Fortune_.Function.getIntersection (left_coner, right_coner);
+				MonoBehaviour.print("search midle:"+middle);
+			}
+		}
+		
+		public void Build()
+		{
+			MonoBehaviour.print ("========================");
+			MonoBehaviour.print ("build time");
+
+			if (state == State_of_Branch.Site)
+				return;
+			//
+			NA.addParabola (left_coner.fun, State_of_Line.Flesh, new RectScene());
+			NA.addParabola (right_coner.fun, State_of_Line.Flesh, new RectScene());
+			RectScene rect=new RectScene();
+			//rect.minW=getNeighbourIntersection(false);
+			rect.maxW=middle;
+			if (NA.FullBeachLine) 
+			{
+				if(leftParabola==null)
+				{
+					leftParabola=NA.addParabola (left_coner.fun, State_of_Line.Flesh, rect);
 				}
 				else
 				{
-					Branch p=child.right,c=p.left;
-					while(c.left!=null)
+					NA.addParabola (leftParabola,left_coner.fun, State_of_Line.Flesh, rect);
+				}
+				rect.minW=middle;
+				MonoBehaviour.print("middle:"+middle);
+				//rect.maxW=getNeighbourIntersection(true);
+				if(right_neighbour==null)
+				{
+					MonoBehaviour.print("stage");
+					if(rightParabola==null)
 					{
-						p=c;
-						c=p.left;
-					}
-					p.left=c.right;
-					c.right=child.right;
-					c.left=child.left;
-					if(isLeft)
-					{
-						parent.left=c;
+						rightParabola=NA.addParabola (right_coner.fun, State_of_Line.Flesh, rect);
 					}
 					else
 					{
-						parent.right=c;
+						NA.addParabola (rightParabola,right_coner.fun, State_of_Line.Flesh, rect);
 					}
-
+				}
+				else
+				{
+					MonoBehaviour.print("end");
 				}
 			}
-
+			else
+			{
+				if(leftParabola==null)
+				{
+					leftParabola=NA.addParabola (left_coner.fun, State_of_Line.Flesh, rect);
+				}
+				else
+				{
+					NA.addParabola (leftParabola,left_coner.fun, State_of_Line.Flesh, rect);
+				}
+				rect.minW=middle;
+				rect.maxW=getNeighbourIntersection(true);
+				if(rightParabola==null)
+				{
+					rightParabola=NA.addParabola (right_coner.fun, State_of_Line.Flesh, rect);
+				}
+				else
+				{
+					NA.addParabola (rightParabola,right_coner.fun, State_of_Line.Flesh, rect);
+				}
+			}
+			//
 		}
-		return true;
-	}
-	public void Print()
-	{
-		Queue<Branch> que=new Queue<Branch>();
-		que.Enqueue (tree.left);
-		que.Enqueue (tree.right);
-		Branch left, right;
-		string sleft, sright;
-		while(que.Count>0)
+		public float getLimit(float _y)
 		{
-			left=que.Dequeue();
-			right=que.Dequeue();
-			if(left==null)
-				sleft="null";
+			reBuild (_y);
+			return middle;
+		}
+		public float getNeighbourIntersection(bool right)
+		{
+			if(right)
+			{
+				if(right_neighbour!=null)
+				{
+					return right_neighbour.middle;
+				}
+				else
+				{
+					return RectScene.begin_maxW;
+				}
+			}
 			else
 			{
-				sleft=left.key.ToString();
-				que.Enqueue(left.left);
-				que.Enqueue(left.right);
+				if(left_neighbour!=null)
+				{
+					return left_neighbour.middle;
+				}
+				else
+				{
+					return RectScene.begin_minW;
+				}
 			}
-			if(right==null)
-				sright="null";
-			else
-			{
-				sright=right.key.ToString();
-				que.Enqueue(right.left);
-				que.Enqueue(right.right);
-			}
-			print(sleft+" "+sright);
 		}
 	}
-}
-public class Branch
-{
-	public float key;
-	public Data data;
-	//float _key=0;
-	//public Branch parent;
-	public Branch left;
-	public Branch right;
 }

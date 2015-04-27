@@ -59,7 +59,7 @@ public class Background : MonoBehaviour {
 			{
 			case State_of_Controller.Edit:
 			{
-				if (Input.GetMouseButtonDown (0))
+				if (Input.GetMouseButton (0))
 				{
 					contr.Add(_this_vertex);
 				}

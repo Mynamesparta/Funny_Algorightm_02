@@ -63,7 +63,9 @@
      <None Include="Assets\docs\Points_information\Circle.txt" />
      <None Include="Assets\docs\Points_information\Mynamesparta.txt" />
      <None Include="Assets\docs\Points_information\Chaos.txt" />
+     <None Include="Assets\docs\Points_information\2_Point.txt" />
      <None Include="Assets\docs\Points_information\Point.txt" />
+     <None Include="Assets\docs\Points_information\Fortune.txt" />
      <None Include="Assets\docs\Points_information\Line.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

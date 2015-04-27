@@ -216,6 +216,8 @@ public class Line : MonoBehaviour {
 	}
 	public void addFunctionPoints(List<Vector3> _list)
 	{
+		if (_list == null || _list.Count == 0)
+			return;
 		function = _list;
 		toBegin ();
 		list.Add (_list [0]);

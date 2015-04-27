@@ -93,12 +93,15 @@ public class Recorder : MonoBehaviour {
 		//print ("Test");
 		for(;Iteration<Scenario.Count;Iteration++)
 		{
-			if(Scenario[Iteration].isPoint())
-				yield return new WaitForSeconds(PAUSE_TIME.ForPoint);
-			else
-				yield return new WaitForSeconds(lineSpeed);
-			while(!isTimetoPlay)
-				yield return new WaitForSeconds(0.1f);
+			if(!Scenario[Iteration].WithoutPause)
+			{
+				if(Scenario[Iteration].isPoint())
+					yield return new WaitForSeconds(PAUSE_TIME.ForPoint);
+				else
+					yield return new WaitForSeconds(lineSpeed);
+				while(!isTimetoPlay)
+					yield return new WaitForSeconds(0.1f);
+			}
 			//
 			if(Iteration>=Scenario.Count)
 			{
@@ -151,6 +154,7 @@ public class Recorder : MonoBehaviour {
 		current_list.line = line;
 		current_list.function = function;
 		current_list.state = _state;
+		current_list.WithoutPause = withoutPause;
 		Scenario.Insert(Scenario.Count,current_list);
 		current_list = null;
 	}
@@ -161,6 +165,7 @@ public class Recorder : MonoBehaviour {
 		current_list=new ListofScenario();
 		current_list.vertex = vertex;
 		current_list.color = color;
+		current_list.WithoutPause = withoutPause;
 		Scenario.Insert(Scenario.Count,current_list);
 		current_list = null;
 	}
