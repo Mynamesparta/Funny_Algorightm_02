@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-public enum State_of_Line{Const_Lenght,Without_Restrictions,Flesh,End_Time};
+public enum State_of_Line{Const_Lenght,Without_Restrictions,Flesh,Flesh_End,End_Time};
 public class Line : MonoBehaviour {
 	public float speed=100f;
 	public float magnitude=10f;
@@ -103,6 +103,15 @@ public class Line : MonoBehaviour {
 			}
 			return;
 		}
+		case State_of_Line.Flesh_End:
+		{
+			if(isFleshTime)
+			{
+				toBegin();
+				isFleshTime=false;
+			}
+			break;
+		}
 		}
 		if (Index >= function.Count||function.Count<=0)
 		{
@@ -164,7 +173,12 @@ public class Line : MonoBehaviour {
 		{
 			if(Index_of_Wave<list.Count-1)
 			{
-				Index_of_Wave++;
+				if(state==State_of_Line.Flesh)
+				{
+					Index_of_Wave=list.Count-1;
+				}
+				else
+					Index_of_Wave++;
 			}
 			for(int i=1;i<Index_of_Wave;i++)//
 			{
@@ -175,7 +189,12 @@ public class Line : MonoBehaviour {
 		{
 			if(Index_of_Wave>1)
 			{
-				Index_of_Wave--;
+				if(state==State_of_Line.Flesh)
+				{
+					Index_of_Wave=1;
+				}
+				else
+					Index_of_Wave--;
 			}
 			for(int i=1;i<list.Count-Index_of_Wave;i++)
 			{
@@ -225,6 +244,10 @@ public class Line : MonoBehaviour {
 	public void setColor(Color begin,Color end)
 	{
 		line_renderer.SetColors (begin, end);
+	}
+	public void FleshTime()
+	{
+		isFleshTime = true;
 	}
 	void Build()
 	{

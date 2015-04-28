@@ -50,7 +50,10 @@ public class Vertex : MonoBehaviour {
 	}
 	public Vector3 getPos()
 	{
-		return transform.position;
+		if(transform!=null)
+			return transform.position;
+		MonoBehaviour.print ("Point transform = null");
+		return new Vector3();
 	}
 	/*/
 	public void addEdge(Edge edge)

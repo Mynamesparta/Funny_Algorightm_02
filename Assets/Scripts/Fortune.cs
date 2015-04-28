@@ -17,20 +17,29 @@ namespace Fortune_
 				List<Vector3> list=new List<Vector3>();
 				float _x=rect.minW;
 				float _y;
-				while(_x<rect.maxW)
+				//MonoBehaviour.print("size of function:"+rect.minW+"->"+rect.maxW);
+				while(true)
 				{
-					_y=fun(_x);
-					if(_y>=rect.minH&&_y<=rect.maxH)
+					if(_x>10000)
+						break;
+					if(_x>rect.maxW)
 					{
+						_x=rect.maxW;
+						_y=fun(_x);
 						list.Add(new Vector3(_x,_y));
+						break;
 					}
+					_y=fun(_x);
+					if(float.IsNaN(_y)||_y>10000)
+						break;
+					list.Add(new Vector3(_x,_y));
 					_x+=deltaX;
 				}
 				return list;
 			}
 			finally
 			{
-				//print("Lenght != 3");
+				//MonoBehaviour.print("BOOOOOOOOMMMMMMMM!!!!");
 			}
 			return null;
 		}
@@ -85,9 +94,23 @@ namespace Fortune_
 				return float.MaxValue;
 			}
 			float[] leftFun=left.CFun, rightFun=right.CFun;
+			if(leftFun==null)
+			{
+				MonoBehaviour.print("left fuction null");
+				return float.NaN;
+			}
+			if(rightFun==null)
+			{
+				MonoBehaviour.print("right fuction null");
+				return float.NaN;
+			}
 			float[] cFun = new float[3];
 			for (int i=0; i<cFun.Length; i++)
 				cFun [i] = leftFun [i] - rightFun [i];
+			if (cFun [0] == 0) 
+			{
+				return -cFun[2]/cFun[1];
+			}
 			float x_1, x_2;
 			float D = cFun [1] * cFun [1] - 4 * cFun [0] * cFun [2];
 			if(D<0)

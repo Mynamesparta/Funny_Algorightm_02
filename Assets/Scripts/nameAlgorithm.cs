@@ -13,10 +13,26 @@ public struct Colors_For_Algorithm
 	public Color sLast,eLast;
 }
 [System.Serializable]
-public struct RectScene
+public class RectScene
 {
 	public static float begin_minW, begin_maxW, begin_minH, begin_maxH;
-	public float minW, maxW, minH, maxH;
+	public float _minW,_maxW;
+	public RectScene()
+	{
+		_minW = begin_minW;
+		_maxW = begin_maxW;
+	}
+	public float minW
+	{
+		get{ return _minW;}
+		set{ _minW = (value < begin_minW ||value==float.NaN? begin_minW : value);}
+	}
+	public float maxW
+	{
+		get{return _maxW;}
+		set{_maxW=(value > begin_maxW||value==float.NaN ? begin_maxW : value);}
+	}
+	//public float  minH, maxH;
 }
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
@@ -40,8 +56,8 @@ public class nameAlgorithm : MonoBehaviour {
 		record = GameObject.FindGameObjectWithTag ("Recorder").GetComponent<Recorder> ();
 		//setAlgorihtm (_NameAlgorithm.Graham);
 		//_Test ();
-		RectScene.begin_maxH = standartRect.maxH;
-		RectScene.begin_minH = standartRect.minH;
+		//RectScene.begin_maxH = standartRect.maxH;
+		//RectScene.begin_minH = standartRect.minH;
 		RectScene.begin_maxW = standartRect.maxW;
 		RectScene.begin_minW = standartRect.minW;
 		Fortune_.Event.NA = this;
@@ -146,8 +162,10 @@ public class nameAlgorithm : MonoBehaviour {
 	}
 	public Line addParabola(Fortune_.Fun fun,State_of_Line state,RectScene rect)
 	{
-		List<Vector3> _fun = Fortune_.Function.buildFun (fun, rect,delta_X);
-		MonoBehaviour.print (_fun.ToString () + " _fun");
+		_fun = Fortune_.Function.buildFun (fun, rect,delta_X);
+		//MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
+		if (_fun.Count < 10)
+			return null;
 		Line line = contr.addLine ();
 		record.Add (line, state, _fun);
 		return line;
@@ -234,8 +252,8 @@ public class nameAlgorithm : MonoBehaviour {
 				{
 				//====================Site=Event================
 				siteE=(Fortune_.Site_Event) ev;
-				BTree.Add(siteE,ev.Y-100);
-				function=Fortune_.Function.buildParabola( siteE.getVector(),ev.Y-100);
+				BTree.Add(siteE,ev.Y-10);
+				function=Fortune_.Function.buildParabola( siteE.getVector(),ev.Y-10);
 				if(false)
 				{
 					//addLine(new Vector3 (siteE.getVector().x, siteE.Y),new Vector3 (siteE.getVector().x, 300),State_of_Line.Flesh);
@@ -244,7 +262,7 @@ public class nameAlgorithm : MonoBehaviour {
 				{
 					//addParabola(function,State_of_Line.Flesh,standartRect);
 				}
-				re_build(ev.Y-100);
+				re_build(ev.Y-10);
 
 					break;
 				//===============================================
@@ -261,7 +279,9 @@ public class nameAlgorithm : MonoBehaviour {
 
 		}
 		if (build != null)
-		build ();
+		{
+			build ();
+		}
 	}
 	//=====================================Kyle=Kirkpatrick================
 	List<Vector3> _fun;

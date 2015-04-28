@@ -28,11 +28,19 @@ public class ListofScenario
 	{
 		if(line!=null)
 		{
-			if(state!=State_of_Line.End_Time)
-				line.state = State_of_Line.End_Time;
+			if(state==State_of_Line.Flesh)
+			{
+				line.FleshTime();
+				line.state=State_of_Line.Flesh_End;
+			}
 			else
-				line.state = State_of_Line.Without_Restrictions;
-			//line.addFunctionPoints (function);
+			{
+				if(state!=State_of_Line.End_Time)
+					line.state = State_of_Line.End_Time;
+				else
+					line.state = State_of_Line.Without_Restrictions;
+				//line.addFunctionPoints (function);
+			}
 		}
 		if(vertex!=null)
 		{
@@ -110,12 +118,6 @@ public class Recorder : MonoBehaviour {
 			}
 			//
 			Scenario[Iteration].Play();
-			if(Scenario[Iteration].WithoutPause)
-			{
-				continue;
-			}
-
-			
 		}
 		//print ("iteration:"+Iteration);
 	}

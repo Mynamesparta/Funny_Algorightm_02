@@ -41,6 +41,7 @@ public class Controller : MonoBehaviour {
 	public float pixelW;
 	public _NameAlgorithm startAgorithm;
 	public string startFile;
+	public float exitTime;
 	//public Vertex startVertex;
 	//public Vertex endVertex;
 	//public Vector2 CreateZone;
@@ -61,6 +62,12 @@ public class Controller : MonoBehaviour {
 	private nameAlgorithm currentAlgorithm;
 	private Canvas _canvas;
 	//=====================private=function======================================
+	IEnumerator ExitTime()
+	{
+		yield return new WaitForSeconds (exitTime);
+		print ("Byeee!!");
+		Application.Quit ();
+	}
 	void Awake()
 	{
 		currendIndex=new Queue<int>(); 
@@ -72,6 +79,8 @@ public class Controller : MonoBehaviour {
 		//button_Chose.SetActive(false);
 		_canvas = SCRIPTS.canvas.GetComponent<Canvas> ();
 		Line.magicSin = isTimetoMagicSin;
+		if(exitTime>0)
+			StartCoroutine (ExitTime ());
 	}
 	void Start()
 	{
