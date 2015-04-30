@@ -9,15 +9,20 @@ namespace Fortune_
 	//----------------------------------------------Function----------------------------------------------------------------------------------
 	public static class Function
 	{
+		public static bool isReverse=false;
 		public static List<Vector3> buildFun(Fun fun,RectScene rect,float deltaX)
 		{
 			try
 			{
-				//Fun fun= x=> cFun[0]*x*x+cFun[1]*x+cFun[2];
+				if(isReverse&&rect.maxW<rect.minW)
+				{
+					float a=rect.maxW;
+					rect.maxW=rect.minW;
+					rect.minW=a;
+				}
 				List<Vector3> list=new List<Vector3>();
 				float _x=rect.minW;
 				float _y;
-				//MonoBehaviour.print("size of function:"+rect.minW+"->"+rect.maxW);
 				while(true)
 				{
 					if(_x>10000)
@@ -123,6 +128,18 @@ namespace Fortune_
 			x_2 = (-cFun [1] - D) / (2*cFun [0]);
 			return((left.Y>right.Y?x_2<x_1:x_1<x_2) ? x_2 : x_1);
 		}
+		public static Vector3 getCenter(Vector3 a,Vector3 b, Vector3 c)
+		{
+			float m_a = (b.y - a.y) / (b.x - a.x);
+			float m_b = (c.y - b.y) / (c.x - b.x);
+			float x = (m_a * m_b * (a.y - c.y) + m_b * (a.x + b.x) - m_a * (b.x + c.x)) / (2 * (m_b - m_a));
+			float y;
+			if (m_a != 0)
+				y = -1 / m_a * (x - (a.x + b.x) / 2) + (a.y + b.y) / 2;
+			else
+				y = (a.y + b.y) / 2;
+			return new Vector3 (x, y);
+		}
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	public enum EVENT{Site,Vertex};
@@ -139,10 +156,6 @@ namespace Fortune_
 		{
 			get{return _y;}
 		}
-	}
-
-	public class Site_Event2:Event
-	{
 	}	
 
 	public class Site_Event:Event
@@ -180,13 +193,24 @@ namespace Fortune_
 		}
 		public float minX=-1000, maxX=1000;
 		public float current_line_y=float.MinValue;
-		
+		public int I
+		{
+			get
+			{
+				return Index;
+			}
+		}
+		int Index;
+		static int _Index = 0;
 		public Site_Event(Vertex v) //:base()
 		{
 			_e = EVENT.Site;
 			vertex = v;
 			_y = vertex.getPos ().y;
-			//NA.build += Build;		
+			//NA.build += Build;	
+			Index = _Index;
+			_Index++;
+
 		}
 		public Site_Event()
 		{
@@ -194,15 +218,21 @@ namespace Fortune_
 
 		public Vector3 getVector()
 		{
-			return vertex.getPos ();
+			if (vertex != null)
+				return vertex.getPos ();
+			else
+				return new Vector3();
 		}
 	}
 	public class Vertex_Event:Event
 	{
-		public Vertex_Event(float y)
+		public Vertex_Event(Vertex a,Vertex b, Vertex c,Binary_Tree.Branch branch)
 		{
 			_e=	EVENT.Vertex;
-			_y = y;
+			center = Function.getCenter (a.getPos(), b.getPos(), c.getPos());
+			_y = center.y-Vector3.Distance(a.getPos(),center);
 		}
+		public Binary_Tree.Branch _branch;
+		public Vector3 center;
 	}
 }

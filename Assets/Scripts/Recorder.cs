@@ -16,8 +16,14 @@ public class ListofScenario
 		if(line!=null)
 		{
 			line.state = state;
-			if(state!=State_of_Line.End_Time)
-				line.addFunctionPoints (function);
+			if(state==State_of_Line.Flesh_End)
+			{
+				line.FleshTime();
+				line.state=State_of_Line.Flesh_End;
+			}
+			else
+				if(state!=State_of_Line.End_Time)
+					line.addFunctionPoints (function);
 		}
 		if(vertex!=null)
 		{
@@ -80,6 +86,7 @@ public class Recorder : MonoBehaviour {
 	{
 		Scenario = new List<ListofScenario> ();
 		setSpeed (0);
+		_Recorder.current = this;
 	}
 	void Update()
 	{
@@ -378,4 +385,15 @@ public class Recorder : MonoBehaviour {
 	}
 
 
+}
+static class _Recorder
+{
+	public static Recorder current;
+	public static void Clear(this Line line)
+	{
+		if(current!=null)
+		{
+			current.Add (line, State_of_Line.Flesh_End, new List<Vector3> ());
+		}
+	}
 }

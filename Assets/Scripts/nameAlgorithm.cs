@@ -34,6 +34,12 @@ public class RectScene
 	}
 	//public float  minH, maxH;
 }
+[System.Serializable]
+public struct Option
+{
+	public bool FullBeachLine;
+	public bool isRevertes;
+}
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
 	public Text text_name;
@@ -42,7 +48,8 @@ public class nameAlgorithm : MonoBehaviour {
 	public float delta_X=1f;
 	[System.NonSerialized]
 	public Vertex vertex_for_test;
-	public bool FullBeachLine=true;
+	public Option OPTIONS;
+	//public bool FullBeachLine=true;
 
 	public delegate void Algorightm();
 	private _NameAlgorithm state;
@@ -61,7 +68,7 @@ public class nameAlgorithm : MonoBehaviour {
 		RectScene.begin_maxW = standartRect.maxW;
 		RectScene.begin_minW = standartRect.minW;
 		Fortune_.Event.NA = this;
-
+		Fortune_.Function.isReverse = OPTIONS.isRevertes;
 	}
 	public void  Start_Algoritghm()//Vertex StartVertex)
 	{
@@ -163,7 +170,7 @@ public class nameAlgorithm : MonoBehaviour {
 	public Line addParabola(Fortune_.Fun fun,State_of_Line state,RectScene rect)
 	{
 		_fun = Fortune_.Function.buildFun (fun, rect,delta_X);
-		//MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
+		MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
 		if (_fun.Count < 10)
 			return null;
 		Line line = contr.addLine ();
@@ -173,6 +180,7 @@ public class nameAlgorithm : MonoBehaviour {
 	public  Line addParabola(Line line,Fortune_.Fun fun,State_of_Line state,RectScene rect)
 	{
 		_fun = Fortune_.Function.buildFun (fun, rect,delta_X);
+		MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
 		//Line line = contr.addLine ();
 		record.Add (line, state, _fun);
 		return line;
@@ -219,12 +227,32 @@ public class nameAlgorithm : MonoBehaviour {
 	public delegate void Build ();
 	public event reBuild re_build;
 	public event Build build;
+	public float line_y = 0.05f;
+	List<Fortune_.Event> list_of_Event;
+	public void AddPointEvent(Fortune_.Vertex_Event ev)
+	{
+		MonoBehaviour.print ("addPointEvent");
+		if (list_of_Event==null)
+			return;
+		if (list_of_Event.Count == 0) 
+		{
+			list_of_Event.Add(ev);
+		}
+		for (int i=0;i<list_of_Event.Count;i++) 
+		{
+			if(list_of_Event[i].Y>ev.Y)
+			{
+				list_of_Event.Insert(i,ev);
+				return;
+			}
+		}
+	}
 	public void Fortune_algorithm ()
 	{
 		Line Sweep= addLine (new Vector3 (-lenght_of_SweepLine/2, 300), new Vector3 (lenght_of_SweepLine/2, 300), State_of_Line.Flesh);
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
 		vertexs = Sort (vertexs, _isGreaterKyle_Kirkpatrick);
-		List<Fortune_.Event> list_of_Event=new List<Fortune_.Event>();
+		list_of_Event=new List<Fortune_.Event>();
 
 		Binary_Tree.Binary_search_tree BTree = new Binary_Tree.Binary_search_tree (this);
 
@@ -241,9 +269,10 @@ public class nameAlgorithm : MonoBehaviour {
 		Fortune_.Vertex_Event vertexE;
 
 
-		foreach (Fortune_.Event ev in list_of_Event) 
+		while(list_of_Event.Count>0) 
 		{
-			addLine(Sweep,State_of_Line.Flesh,new Vector3 (-lenght_of_SweepLine/2, ev.Y-100), new Vector3 (lenght_of_SweepLine/2, ev.Y-100));
+			Fortune_.Event ev=list_of_Event[0];
+			addLine(Sweep,State_of_Line.Flesh,new Vector3 (-lenght_of_SweepLine/2, ev.Y-0.05f), new Vector3 (lenght_of_SweepLine/2, ev.Y-0.05f));
 			//print(ev.Y-5);
 			record.setWithoutPause(true);
 			switch(ev.getEvent())
@@ -252,17 +281,12 @@ public class nameAlgorithm : MonoBehaviour {
 				{
 				//====================Site=Event================
 				siteE=(Fortune_.Site_Event) ev;
-				BTree.Add(siteE,ev.Y-10);
-				function=Fortune_.Function.buildParabola( siteE.getVector(),ev.Y-10);
-				if(false)
+				BTree.Add(siteE,ev.Y-0.05f);
+				re_build(ev.Y-0.05f);
+				if (build != null)
 				{
-					//addLine(new Vector3 (siteE.getVector().x, siteE.Y),new Vector3 (siteE.getVector().x, 300),State_of_Line.Flesh);
+					build ();
 				}
-				else
-				{
-					//addParabola(function,State_of_Line.Flesh,standartRect);
-				}
-				re_build(ev.Y-10);
 
 					break;
 				//===============================================
@@ -271,17 +295,16 @@ public class nameAlgorithm : MonoBehaviour {
 				{
 				//============================Vertex=Event========
 					vertexE=(Fortune_.Vertex_Event)ev;
+					MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
 					break;
 				//================================================
 				}
 			}
+			list_of_Event.RemoveAt(0);
 			record.setWithoutPause(false);
 
 		}
-		if (build != null)
-		{
-			build ();
-		}
+		BTree.Test ();
 	}
 	//=====================================Kyle=Kirkpatrick================
 	List<Vector3> _fun;

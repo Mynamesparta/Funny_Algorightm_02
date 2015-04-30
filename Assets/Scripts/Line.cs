@@ -39,17 +39,6 @@ public class Line : MonoBehaviour {
 		Add (function [0]);
 		/*/
 	}
-	public void Clear()
-	{
-		line_renderer.SetVertexCount (0);
-		if(!isTimeForSin)
-		{
-			list.Clear();
-		}
-		else
-		{
-		}
-	}
 	public void Add(Vector3 vec)
 	{
 		line_renderer.SetVertexCount (list.Count);
