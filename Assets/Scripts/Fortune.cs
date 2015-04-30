@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Binary_Tree;
 
 namespace Fortune_
 {
@@ -130,6 +131,10 @@ namespace Fortune_
 		}
 		public static Vector3 getCenter(Vector3 a,Vector3 b, Vector3 c)
 		{
+			Vector3 vec1=b-a, vec2=c-b;
+			float col_1=vec2.x/vec1.x,col_2=vec2.y/vec1.y;
+			//if(col_1==col_2||col_1==-col_2);
+			//	return new Vector3 (float.NaN, float.NaN, float.NaN);
 			float m_a = (b.y - a.y) / (b.x - a.x);
 			float m_b = (c.y - b.y) / (c.x - b.x);
 			float x = (m_a * m_b * (a.y - c.y) + m_b * (a.x + b.x) - m_a * (b.x + c.x)) / (2 * (m_b - m_a));
@@ -139,6 +144,37 @@ namespace Fortune_
 			else
 				y = (a.y + b.y) / 2;
 			return new Vector3 (x, y);
+		}
+		public static bool Circle(Branch branch,out float y)
+		{
+			y = float.NaN;
+			if (branch == null)
+				return false;
+			Branch parent = branch.parent;
+			Site_Event left, right;
+			if (branch.isLeftBranch) 
+			{
+				if(parent.left_neighbour==null)
+					return false;
+				left = parent.left_neighbour.coner.left_data;
+				right = parent.coner.right_data;
+			}
+			else
+			{
+				if(parent.right_neighbour==null)
+				{
+					return false;
+				}
+				left=parent.coner.left_data;
+				right=parent.right_neighbour.coner.right_data;
+			}
+			MonoBehaviour.print (left.I + "+" + branch.coner.left_data.I + "+" + right.I);
+			Vector3 center = getCenter (left.getVector(), branch.getVertex ().getPos (), right.getVector());
+			y = center.y - Vector3.Distance (center, branch.getVertex ().getPos ());
+			if (float.IsNaN (y))
+				return false;
+			MonoBehaviour.print ("Y:" + y);
+			return true;
 		}
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------
@@ -231,6 +267,13 @@ namespace Fortune_
 			_e=	EVENT.Vertex;
 			center = Function.getCenter (a.getPos(), b.getPos(), c.getPos());
 			_y = center.y-Vector3.Distance(a.getPos(),center);
+			_branch = branch;
+		}
+		public Vertex_Event(Branch branch,float y)
+		{
+			_e = EVENT.Vertex;
+			_y = y;
+			_branch = branch;
 		}
 		public Binary_Tree.Branch _branch;
 		public Vector3 center;

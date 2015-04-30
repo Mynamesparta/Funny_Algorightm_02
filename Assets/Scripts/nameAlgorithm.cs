@@ -170,7 +170,7 @@ public class nameAlgorithm : MonoBehaviour {
 	public Line addParabola(Fortune_.Fun fun,State_of_Line state,RectScene rect)
 	{
 		_fun = Fortune_.Function.buildFun (fun, rect,delta_X);
-		MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
+		//MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
 		if (_fun.Count < 10)
 			return null;
 		Line line = contr.addLine ();
@@ -180,7 +180,7 @@ public class nameAlgorithm : MonoBehaviour {
 	public  Line addParabola(Line line,Fortune_.Fun fun,State_of_Line state,RectScene rect)
 	{
 		_fun = Fortune_.Function.buildFun (fun, rect,delta_X);
-		MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
+		//MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
 		//Line line = contr.addLine ();
 		record.Add (line, state, _fun);
 		return line;
@@ -232,15 +232,18 @@ public class nameAlgorithm : MonoBehaviour {
 	public void AddPointEvent(Fortune_.Vertex_Event ev)
 	{
 		MonoBehaviour.print ("addPointEvent");
-		if (list_of_Event==null)
+		if (list_of_Event == null) 
+		{
+			MonoBehaviour.print("list_of_Event==null");
 			return;
+		}
 		if (list_of_Event.Count == 0) 
 		{
 			list_of_Event.Add(ev);
 		}
 		for (int i=0;i<list_of_Event.Count;i++) 
 		{
-			if(list_of_Event[i].Y>ev.Y)
+			if(list_of_Event[i].Y<ev.Y)
 			{
 				list_of_Event.Insert(i,ev);
 				return;
@@ -268,39 +271,40 @@ public class nameAlgorithm : MonoBehaviour {
 		Fortune_.Site_Event siteE;
 		Fortune_.Vertex_Event vertexE;
 
-
 		while(list_of_Event.Count>0) 
 		{
 			Fortune_.Event ev=list_of_Event[0];
+			list_of_Event.RemoveAt(0);
 			addLine(Sweep,State_of_Line.Flesh,new Vector3 (-lenght_of_SweepLine/2, ev.Y-0.05f), new Vector3 (lenght_of_SweepLine/2, ev.Y-0.05f));
 			//print(ev.Y-5);
 			record.setWithoutPause(true);
 			switch(ev.getEvent())
 			{
-				case Fortune_.EVENT.Site:
-				{
+			case Fortune_.EVENT.Site:
+			{
 				//====================Site=Event================
 				siteE=(Fortune_.Site_Event) ev;
+				MonoBehaviour.print("Site_Evenet:"+siteE.Y);
 				BTree.Add(siteE,ev.Y-0.05f);
-				re_build(ev.Y-0.05f);
-				if (build != null)
-				{
-					build ();
-				}
-
-					break;
+				
+				break;
 				//===============================================
-				}
-				case Fortune_.EVENT.Vertex:
-				{
-				//============================Vertex=Event========
-					vertexE=(Fortune_.Vertex_Event)ev;
-					MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
-					break;
-				//================================================
-				}
 			}
-			list_of_Event.RemoveAt(0);
+			case Fortune_.EVENT.Vertex:
+			{
+				//============================Vertex=Event========
+				vertexE=(Fortune_.Vertex_Event)ev;
+				MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
+				BTree.Delete(vertexE._branch);
+				break;
+				//================================================
+			}
+			}
+			re_build(ev.Y-0.05f);
+			if (build != null)
+			{
+				build ();
+			}
 			record.setWithoutPause(false);
 
 		}
