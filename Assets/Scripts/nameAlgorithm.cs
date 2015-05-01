@@ -240,15 +240,18 @@ public class nameAlgorithm : MonoBehaviour {
 		if (list_of_Event.Count == 0) 
 		{
 			list_of_Event.Add(ev);
+			MonoBehaviour.print("Count:"+list_of_Event.Count);
 		}
 		for (int i=0;i<list_of_Event.Count;i++) 
 		{
 			if(list_of_Event[i].Y<ev.Y)
 			{
 				list_of_Event.Insert(i,ev);
+				MonoBehaviour.print("Count:"+list_of_Event.Count);
 				return;
 			}
 		}
+		list_of_Event.Insert (list_of_Event.Count, ev);
 	}
 	public void Fortune_algorithm ()
 	{
@@ -275,6 +278,7 @@ public class nameAlgorithm : MonoBehaviour {
 		{
 			Fortune_.Event ev=list_of_Event[0];
 			list_of_Event.RemoveAt(0);
+			MonoBehaviour.print("Count:"+list_of_Event.Count);
 			addLine(Sweep,State_of_Line.Flesh,new Vector3 (-lenght_of_SweepLine/2, ev.Y-0.05f), new Vector3 (lenght_of_SweepLine/2, ev.Y-0.05f));
 			//print(ev.Y-5);
 			record.setWithoutPause(true);
@@ -293,9 +297,11 @@ public class nameAlgorithm : MonoBehaviour {
 			case Fortune_.EVENT.Vertex:
 			{
 				//============================Vertex=Event========
+				BTree.Test ();
 				vertexE=(Fortune_.Vertex_Event)ev;
 				MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
 				BTree.Delete(vertexE._branch);
+				BTree.Test ();
 				break;
 				//================================================
 			}
@@ -308,7 +314,7 @@ public class nameAlgorithm : MonoBehaviour {
 			record.setWithoutPause(false);
 
 		}
-		BTree.Test ();
+		//BTree.Test ();
 	}
 	//=====================================Kyle=Kirkpatrick================
 	List<Vector3> _fun;
