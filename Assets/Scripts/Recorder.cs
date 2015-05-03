@@ -71,7 +71,8 @@ public struct PauseTime
 }
 public class Recorder : MonoBehaviour {
 	public PauseTime PAUSE_TIME;
-	public int 	 Speed=2;
+	public int Speed = 2;
+	public bool Rewinding_by_Block=false;
 
 	private State_of_Recorder state = State_of_Recorder.Play;
 
@@ -363,6 +364,22 @@ public class Recorder : MonoBehaviour {
 		Iteration--;
 		if(Iteration>=0)
 			Scenario [Iteration].Play ();
+		if(Rewinding_by_Block)
+		{
+			while(Iteration>=0&&Scenario[Iteration].WithoutPause)
+			{
+				Scenario [Iteration].backPlay ();
+				Iteration--;
+			}
+			for(int i=Iteration;i>=0;i--)
+			{
+				Scenario[i].backPlay();
+			}
+			for(int i=0;i<Iteration;i++)
+			{
+				Scenario[i].Play();
+			}
+		}
 	}
 	public void Foward()
 	{
@@ -372,6 +389,13 @@ public class Recorder : MonoBehaviour {
 			Iteration = 0;
 		Scenario [Iteration].Play ();
 		Iteration++;
+		if (Rewinding_by_Block) 
+		{
+			while (Iteration<Scenario.Count&&Scenario[Iteration].WithoutPause) {
+				Scenario [Iteration].Play ();
+				Iteration++;
+			}
+		}
 	}
 	public void setWithoutPause(bool b)
 	{

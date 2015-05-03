@@ -79,6 +79,7 @@ public class Controller : MonoBehaviour {
 		//button_Chose.SetActive(false);
 		_canvas = SCRIPTS.canvas.GetComponent<Canvas> ();
 		Line.magicSin = isTimetoMagicSin;
+		Fortune_.VoronoiEdge.contr = this;
 		if(exitTime>0)
 			StartCoroutine (ExitTime ());
 	}
@@ -236,7 +237,15 @@ public class Controller : MonoBehaviour {
 			vertexs.Add (_vertex);
 		}
 	}
-	public Line addLine ()
+	public void addLine(Line line)
+	{
+		if(line!=null)
+		{
+			line.transform.SetParent (PARENTS.line_parent);
+			lines.Add (line);
+		}
+	}
+	public Line createLine ()
 	{
 		Line line = (Object.Instantiate (CLONE.clone_of_Line)as GameObject).GetComponent<Line> ();
 		line.transform.SetParent (PARENTS.line_parent);

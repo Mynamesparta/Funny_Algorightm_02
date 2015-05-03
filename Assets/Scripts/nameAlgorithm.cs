@@ -7,10 +7,18 @@ using Fortune_;
 [System.Serializable]
 public enum _NameAlgorithm{Fortune=0,Kyle_Kirkpatrick=3,Andrew_Edwin,Graham,Last };
 [System.Serializable]
+public struct Colors
+{
+	public Color start,end;
+}
+[System.Serializable]
 public struct Colors_For_Algorithm
 {
-	public Color sGraham, eGraham;
-	public Color sLast,eLast;
+	public Colors Graham;
+	public Colors Last;
+	public Colors CoastLine;
+	public Colors SweepLine;
+	public Colors VoronoiEdge;
 }
 [System.Serializable]
 public class RectScene
@@ -45,6 +53,8 @@ public class nameAlgorithm : MonoBehaviour {
 	public Text text_name;
 	public Colors_For_Algorithm COLORS;
 	public RectScene standartRect;
+	public float maxH;
+	public float minH;
 	public float delta_X=1f;
 	[System.NonSerialized]
 	public Vertex vertex_for_test;
@@ -67,7 +77,12 @@ public class nameAlgorithm : MonoBehaviour {
 		//RectScene.begin_minH = standartRect.minH;
 		RectScene.begin_maxW = standartRect.maxW;
 		RectScene.begin_minW = standartRect.minW;
+		RectScene.begin_maxH = maxH;
+		RectScene.begin_minH = minH;
+
 		Fortune_.Event.NA = this;
+		VoronoiEdge.NA = this;
+
 		Fortune_.Function.isReverse = OPTIONS.isRevertes;
 	}
 	public void  Start_Algoritghm()//Vertex StartVertex)
@@ -143,6 +158,7 @@ public class nameAlgorithm : MonoBehaviour {
 	{
 		if (begin != null && end != null) 
 		{
+			//MonoBehaviour.print(""+begin.ToString()+"->"+end.ToString());
 			_fun = new List<Vector3> ();
 			_fun.Add (begin);
 			_fun.Add (end);
@@ -154,7 +170,7 @@ public class nameAlgorithm : MonoBehaviour {
 		_fun=new List<Vector3>();//Vector3
 		_fun.Add(begin.getPos());
 		_fun.Add(end.getPos());
-		Line line = contr.addLine ();
+		Line line = contr.createLine ();
 		record.Add(line,state,_fun);
 		return line;
 	}
@@ -163,17 +179,17 @@ public class nameAlgorithm : MonoBehaviour {
 		_fun=new List<Vector3>();
 		_fun.Add(begin);
 		_fun.Add(end);
-		Line line = contr.addLine ();
+		Line line = contr.createLine ();
 		record.Add(line,state,_fun);
 		return line;
 	}
 	public Line addParabola(Fortune_.Fun fun,State_of_Line state,RectScene rect)
 	{
 		_fun = Fortune_.Function.buildFun (fun, rect,delta_X);
-		//MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
+		MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
 		if (_fun.Count < 10)
 			return null;
-		Line line = contr.addLine ();
+		Line line = contr.createLine ();
 		record.Add (line, state, _fun);
 		return line;
 	}
@@ -227,8 +243,13 @@ public class nameAlgorithm : MonoBehaviour {
 	public delegate void Build ();
 	public event reBuild re_build;
 	public event Build build;
+	public event Build destroy;
+
 	public float line_y = 0.05f;
 	List<Fortune_.Event> list_of_Event;
+	float cur_Y=float.MaxValue;
+	List<Fortune_.VoronoiEdge> list_of_edge;
+
 	public void AddPointEvent(Fortune_.Vertex_Event ev)
 	{
 		MonoBehaviour.print ("addPointEvent");
@@ -236,6 +257,11 @@ public class nameAlgorithm : MonoBehaviour {
 		{
 			MonoBehaviour.print("list_of_Event==null");
 			return;
+		}
+		if(ev.Y>cur_Y)
+		{
+			MonoBehaviour.print("ev.Y > current Y");
+			//return;
 		}
 		if (list_of_Event.Count == 0) 
 		{
@@ -253,12 +279,22 @@ public class nameAlgorithm : MonoBehaviour {
 		}
 		list_of_Event.Insert (list_of_Event.Count, ev);
 	}
+	public void addEdge(Fortune_.VoronoiEdge edge)
+	{
+		if(list_of_edge==null)
+		{
+			list_of_edge = new List<VoronoiEdge> ();
+		}
+		list_of_edge.Add (edge);
+	}
 	public void Fortune_algorithm ()
 	{
 		Line Sweep= addLine (new Vector3 (-lenght_of_SweepLine/2, 300), new Vector3 (lenght_of_SweepLine/2, 300), State_of_Line.Flesh);
+		Sweep.setColor (COLORS.SweepLine.start, COLORS.SweepLine.end);
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
 		vertexs = Sort (vertexs, _isGreaterKyle_Kirkpatrick);
 		list_of_Event=new List<Fortune_.Event>();
+		list_of_edge = new List<VoronoiEdge> ();
 
 		Binary_Tree.Binary_search_tree BTree = new Binary_Tree.Binary_search_tree (this);
 
@@ -273,24 +309,31 @@ public class nameAlgorithm : MonoBehaviour {
 		Fortune_.Fun function;
 		Fortune_.Site_Event siteE;
 		Fortune_.Vertex_Event vertexE;
-
+		int Index_of_Step = 0;
+		bool isTimetoReBuild;
+		float lastBuild=-1000f;
 		while(list_of_Event.Count>0) 
 		{
+			MonoBehaviour.print("=================before="+Index_of_Step+"==============");
+			isTimetoReBuild=true;
+			Index_of_Step++;
 			Fortune_.Event ev=list_of_Event[0];
 			list_of_Event.RemoveAt(0);
+			cur_Y=ev.Y;
 			MonoBehaviour.print("Count:"+list_of_Event.Count);
 			addLine(Sweep,State_of_Line.Flesh,new Vector3 (-lenght_of_SweepLine/2, ev.Y-0.05f), new Vector3 (lenght_of_SweepLine/2, ev.Y-0.05f));
-			//print(ev.Y-5);
 			record.setWithoutPause(true);
 			switch(ev.getEvent())
 			{
 			case Fortune_.EVENT.Site:
 			{
 				//====================Site=Event================
+				BTree.Test ();
+
 				siteE=(Fortune_.Site_Event) ev;
 				MonoBehaviour.print("Site_Evenet:"+siteE.Y);
-				BTree.Add(siteE,ev.Y-0.05f);
-				
+				BTree.Add(siteE,ev.Y);
+
 				break;
 				//===============================================
 			}
@@ -298,23 +341,54 @@ public class nameAlgorithm : MonoBehaviour {
 			{
 				//============================Vertex=Event========
 				BTree.Test ();
+
 				vertexE=(Fortune_.Vertex_Event)ev;
 				MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
-				BTree.Delete(vertexE._branch);
-				BTree.Test ();
+				isTimetoReBuild=BTree.Delete(vertexE._branch);
+
+				//BTree.Test ();
 				break;
 				//================================================
 			}
 			}
-			re_build(ev.Y-0.05f);
+			BTree.Test ();
+			MonoBehaviour.print("=================after===============");
+			MonoBehaviour.print("=================rebuild=============");
+			if(isTimetoReBuild)
+			{
+				re_build(ev.Y-0.05f);
+				lastBuild=ev.Y-0.05f;
+				BTree.Test ();
+				MonoBehaviour.print("=================build===============");
+				if (build != null)
+				{
+					build ();
+				}
+				record.setWithoutPause(false);
+			}
+
+		}
+		//
+		lastBuild += 1f;
+		lastBuild = RectScene.begin_minH*37/64;
+		for(;lastBuild>=RectScene.begin_minH*37/64;lastBuild--)
+		{
+			MonoBehaviour.print("=================The=Last=rebuild=============");
+			addLine(Sweep,State_of_Line.Flesh,new Vector3 (-lenght_of_SweepLine/2, lastBuild), new Vector3 (lenght_of_SweepLine/2, lastBuild));
+			record.setWithoutPause(true);
+			re_build(lastBuild);
+			BTree.Test ();
+			MonoBehaviour.print("=================The=Last=Build=============");
 			if (build != null)
 			{
 				build ();
 			}
 			record.setWithoutPause(false);
-
 		}
 		//BTree.Test ();
+		//
+		if (destroy != null)
+			destroy ();
 	}
 	//=====================================Kyle=Kirkpatrick================
 	List<Vector3> _fun;
@@ -572,10 +646,10 @@ public class nameAlgorithm : MonoBehaviour {
 		List<Line> lines = new List<Line> ();
 		for (int i=0; i<vertexs.Length-1; i++) 
 		{
-			addLine(center,vertexs[i].getPos(),State_of_Line.Without_Restrictions).setColor(COLORS.sGraham,COLORS.eGraham);
+			addLine(center,vertexs[i].getPos(),State_of_Line.Without_Restrictions).setColor(COLORS.Graham.start,COLORS.Graham.end);
 			lines.Add(addLine(vertexs[i],vertexs[i+1],State_of_Line.Without_Restrictions));
 		}
-		addLine(center,vertexs[vertexs.Length-1].getPos(),State_of_Line.Without_Restrictions).setColor(COLORS.sGraham,COLORS.eGraham);
+		addLine(center,vertexs[vertexs.Length-1].getPos(),State_of_Line.Without_Restrictions).setColor(COLORS.Graham.start,COLORS.Graham.end);
 		lines.Add(addLine(vertexs[vertexs.Length-1],vertexs[0],State_of_Line.Without_Restrictions));
 		List<Vector3> list_of_vertexs = new List<Vector3> ();
 		for(int i=0;i<vertexs.Length;i++)
@@ -708,11 +782,11 @@ public class nameAlgorithm : MonoBehaviour {
 		}//.setColor (COLORS.sLast, COLORS.eLast);
 		if(_Last (left, point, leftList))//
 		{
-			line_1.setColor (COLORS.sLast, COLORS.eLast);
+			line_1.setColor (COLORS.Last.start, COLORS.Last.end);
 		}
 		if(_Last (point, right, rightList))
 		{
-			line_2.setColor (COLORS.sLast, COLORS.eLast);
+			line_2.setColor (COLORS.Last.start, COLORS.Last.end);
 		}
 		return true;
 	}
@@ -723,7 +797,7 @@ public class nameAlgorithm : MonoBehaviour {
 		vertexs = Sort (vertexs, _isGreaterAndrew_Edwin);
 		List<Vertex> Up=new List<Vertex>(), Down=new List<Vertex>();
 		Vertex left=vertexs[0], right=vertexs[vertexs.Length-1];
-		addLine (left, right, State_of_Line.Without_Restrictions).setColor (COLORS.sLast, COLORS.eLast);
+		addLine (left, right, State_of_Line.Without_Restrictions).setColor (COLORS.Last.start, COLORS.Last.end);
 		for(int i=1;i<vertexs.Length-1;i++)
 		{
 			if(it_in_Left_side(left.getPos(),right.getPos(),vertexs[i].getPos()))

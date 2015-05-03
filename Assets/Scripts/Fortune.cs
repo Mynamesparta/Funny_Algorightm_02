@@ -23,7 +23,11 @@ namespace Fortune_
 				}
 				List<Vector3> list=new List<Vector3>();
 				float _x=rect.minW;
-				float _y;
+				float _y=fun(_x);
+				list.Add(new Vector3(_x,_y));
+				//MonoBehaviour.print("minW:"+_x);
+				bool b=true;
+				//int Index=0;
 				while(true)
 				{
 					if(_x>10000)
@@ -32,12 +36,31 @@ namespace Fortune_
 					{
 						_x=rect.maxW;
 						_y=fun(_x);
+						//if(_y<RectScene.begin_maxH)
 						list.Add(new Vector3(_x,_y));
 						break;
 					}
 					_y=fun(_x);
-					if(float.IsNaN(_y)||_y>10000)
+					if(float.IsNaN(_y))
+					{
+						//_x+=deltaX;
 						break;
+					}
+					if(_y>RectScene.begin_maxH)
+					{
+						if(b)
+						{
+							_x+=deltaX;
+							continue;
+						}
+						else
+						{
+							list.Add(new Vector3(_x,_y));
+							break;
+						}
+					}
+					else
+						b=false;
 					list.Add(new Vector3(_x,_y));
 					_x+=deltaX;
 				}
@@ -129,6 +152,7 @@ namespace Fortune_
 			x_2 = (-cFun [1] - D) / (2*cFun [0]);
 			return((left.Y>right.Y?x_2<x_1:x_1<x_2) ? x_2 : x_1);
 		}
+		//public static float 
 		public static Vector3 getCenter(Vector3 a,Vector3 b, Vector3 c)
 		{
 			Vector3 vec1=b-a, vec2=c-b;
@@ -151,6 +175,8 @@ namespace Fortune_
 			if (branch == null)
 				return false;
 			Branch parent = branch.parent;
+			if (parent == null)
+				return false;
 			Site_Event left, right;
 			if (branch.isLeftBranch) 
 			{
@@ -172,6 +198,8 @@ namespace Fortune_
 			Vector3 center = getCenter (left.getVector(), branch.getVertex ().getPos (), right.getVector());
 			y = center.y - Vector3.Distance (center, branch.getVertex ().getPos ());
 			if (float.IsNaN (y))
+				return false;
+			if (float.IsInfinity (y))
 				return false;
 			MonoBehaviour.print ("Y:" + y);
 			return true;
@@ -277,5 +305,76 @@ namespace Fortune_
 		}
 		public Binary_Tree.Branch _branch;
 		public Vector3 center;
+	}
+	public class VoronoiEdge
+	{
+		bool isTimeToEnd=false;
+		Line line;
+		public VoronoiVertex first,second;
+		public static nameAlgorithm NA;
+		public static Controller contr;
+		public VoronoiEdge():base()
+		{
+			first = new VoronoiVertex (this,true);
+			second = new VoronoiVertex (this,false);
+			NA.build += Build;
+			line = contr.createLine ();
+			line.setColor (NA.COLORS.VoronoiEdge.start, NA.COLORS.VoronoiEdge.end);
+			NA.addEdge (this);
+		}
+		public void _Awake()
+		{
+			line.awake -= _Awake;
+		}
+		/*/
+		public Vector3 first
+		{
+			get{ return _first.postion;}
+		}
+		public Vector3 second
+		{
+			get{ return _second.postion;}
+		}
+		/*/
+		public void endSearch()
+		{
+			if (isTimeToEnd)
+				NA.build -= Build;
+			else
+				isTimeToEnd = true;
+		}
+		public void Build()
+		{
+			//MonoBehaviour.print ("build Voronoi Edge");
+			//MonoBehaviour.print (first.postion.ToString () + "->" + second.postion.ToString ());
+			NA.addLine (line, State_of_Line.Flesh, first.postion, second.postion);
+		}
+	}
+	public class VoronoiVertex
+	{
+		VoronoiEdge parent;
+		bool isFirst;
+		bool isEditable=true;
+		Vector3 _position;
+		public Vector3 postion
+		{
+			get{ return _position;}
+			set{ _position = (isEditable ? value : _position);}
+		}
+		public VoronoiVertex(VoronoiEdge edge,bool b)
+		{
+			parent = edge;
+			isFirst = b;
+		}
+
+		public void endSearch()
+		{
+			isEditable = false;
+			parent.endSearch ();
+		}
+		/*public*/ void startSearch()
+		{
+			isEditable = true;
+		}
 	}
 }

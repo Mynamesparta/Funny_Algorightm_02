@@ -22,7 +22,9 @@ public class Line : MonoBehaviour {
 	bool isChanged;
 	bool isDestroyTime=false;
 	bool isFleshTime=true;
-	void Awake()
+	public delegate void _awake();
+	public event _awake awake;
+	public void Awake()
 	{
 		line_renderer = GetComponent<LineRenderer> ();
 		list = new List<Vector3> ();
@@ -38,6 +40,8 @@ public class Line : MonoBehaviour {
 		function.Add (new Vector3 (100, 100, 0));
 		Add (function [0]);
 		/*/
+		if (awake != null)
+			awake ();
 	}
 	public void Add(Vector3 vec)
 	{
