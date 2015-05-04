@@ -191,7 +191,7 @@ public class Line : MonoBehaviour {
 			}
 			for(int i=1;i<list.Count-Index_of_Wave;i++)
 			{
-				line_renderer.SetPosition(i,list[i]);
+				line_renderer.SetPosition (i,list[i]);
 			}
 			for(int i=list.Count-Index_of_Wave;i<list.Count-1;i++)//
 			{
@@ -222,7 +222,7 @@ public class Line : MonoBehaviour {
 	public void addFuctionPoint(Vector3 vec)
 	{
 		function.Add (vec);
-		if (function.Count == 1)
+		if (function.Count == 0)
 			list.Add(vec);
 		//print(list[0].ToString());
 	}

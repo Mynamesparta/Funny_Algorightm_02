@@ -98,7 +98,7 @@ namespace Fortune_
 			fun [2] = vertex_of_parabola.y - fun [0] * vertex_of_parabola.x * vertex_of_parabola.x - fun [1] * vertex_of_parabola.x;
 			//return x=> fun[0]*x*x+fun[1]*x+fun[2];
 		}
-		public static bool buildParabola(ref Site_Event sevent,float _y)
+		public static bool buildParabola(Site_Event sevent,float _y)
 		{
 			if (_y == sevent.current_line_y)
 				return false;
@@ -194,7 +194,7 @@ namespace Fortune_
 				left=parent.coner.left_data;
 				right=parent.right_neighbour.coner.right_data;
 			}
-			MonoBehaviour.print (left.I + "+" + branch.coner.left_data.I + "+" + right.I);
+			MonoBehaviour.print (left.I + "+" + branch.data.I + "+" + right.I);
 			Vector3 center = getCenter (left.getVector(), branch.getVertex ().getPos (), right.getVector());
 			y = center.y - Vector3.Distance (center, branch.getVertex ().getPos ());
 			if (float.IsNaN (y))
@@ -347,7 +347,8 @@ namespace Fortune_
 		{
 			//MonoBehaviour.print ("build Voronoi Edge");
 			//MonoBehaviour.print (first.postion.ToString () + "->" + second.postion.ToString ());
-			NA.addLine (line, State_of_Line.Flesh, first.postion, second.postion);
+			if(NA.OPTIONS.VoloronoiEdge)
+				NA.addLine (line, State_of_Line.Flesh, first.postion, second.postion);
 		}
 	}
 	public class VoronoiVertex

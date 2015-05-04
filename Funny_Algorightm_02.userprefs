@@ -1,25 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Fortune.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Binary_search_tree.cs">
     <Files>
-      <File FileName="Assets\Scripts\Fortune.cs" Line="326" Column="75" />
-      <File FileName="Assets\Scripts\Binary_search_tree.cs" Line="436" Column="4" />
-      <File FileName="Assets\Scripts\nameAlgorithm.cs" Line="286" Column="27" />
-      <File FileName="Assets\Scripts\Line.cs" Line="27" Column="9" />
-      <File FileName="Assets\Scripts\Controller.cs" Line="243" Column="51" />
+      <File FileName="Assets\Scripts\Binary_search_tree.cs" Line="990" Column="16" />
+      <File FileName="Assets\Scripts\Fortune.cs" Line="172" Column="3" />
+      <File FileName="Assets\Scripts\nameAlgorithm.cs" Line="392" Column="11" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches>
-    <Watch file="Assets\Scripts\Fortune.cs" line="29" offsetX="349" offsetY="476" expression="_x" liveUpdate="False" />
-    <Watch file="Assets\Scripts\Fortune.cs" line="30" offsetX="333" offsetY="493" expression="_y" liveUpdate="False" />
-    <Watch file="Assets\Scripts\nameAlgorithm.cs" line="165" offsetX="549" offsetY="2788" expression="rect" liveUpdate="False" />
-    <Watch file="Assets\Scripts\nameAlgorithm.cs" line="28" offsetX="1050" offsetY="462" expression="begin_minW" liveUpdate="False" />
-    <Watch file="Assets\Scripts\nameAlgorithm.cs" line="33" offsetX="698" offsetY="539" expression="_maxW" liveUpdate="False" />
-    <Watch file="Assets\Scripts\nameAlgorithm.cs" line="33" offsetX="853" offsetY="547" expression="value" liveUpdate="True" />
-    <Watch file="Assets\Scripts\nameAlgorithm.cs" line="33" offsetX="1040" offsetY="548" expression="begin_maxW" liveUpdate="False" />
-    <Watch file="Assets\Scripts\nameAlgorithm.cs" line="28" offsetX="880" offsetY="459" expression="value" liveUpdate="True" />
-  </MonoDevelop.Ide.DebuggingService.PinnedWatches>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

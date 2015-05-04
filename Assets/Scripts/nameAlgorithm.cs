@@ -1,4 +1,4 @@
- using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -47,6 +47,9 @@ public struct Option
 {
 	public bool FullBeachLine;
 	public bool isRevertes;
+	public bool VoloronoiEdge;
+	public bool allEvent;
+	public bool Delete;
 }
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
@@ -187,8 +190,8 @@ public class nameAlgorithm : MonoBehaviour {
 	{
 		_fun = Fortune_.Function.buildFun (fun, rect,delta_X);
 		MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
-		if (_fun.Count < 10)
-			return null;
+		//if (_fun.Count < 10)
+		//	return null;
 		Line line = contr.createLine ();
 		record.Add (line, state, _fun);
 		return line;
@@ -249,9 +252,47 @@ public class nameAlgorithm : MonoBehaviour {
 	List<Fortune_.Event> list_of_Event;
 	float cur_Y=float.MaxValue;
 	List<Fortune_.VoronoiEdge> list_of_edge;
-
+	List<Fortune_.Vertex_Event> list_of_vertexEvent;
 	public void AddPointEvent(Fortune_.Vertex_Event ev)
 	{
+		MonoBehaviour.print ("addPointEvent");
+		if (list_of_vertexEvent == null) 
+		{
+			list_of_vertexEvent=new List<Vertex_Event>();
+			//MonoBehaviour.print("list_of_Event==null");
+			//return;
+		}
+		if(ev.Y>cur_Y)
+		{
+			MonoBehaviour.print("ev.Y > current Y");
+			//return;
+		}
+		if (list_of_vertexEvent.Count == 0) 
+		{
+			list_of_vertexEvent.Add(ev);
+			MonoBehaviour.print("Count:"+list_of_vertexEvent.Count);
+		}
+		for (int i=0;i<list_of_vertexEvent.Count;i++) 
+		{
+			if(list_of_vertexEvent[i].Y<ev.Y)
+			{
+				list_of_vertexEvent.Insert(i,ev);
+				MonoBehaviour.print("Count:"+list_of_vertexEvent.Count);
+				return;
+			}
+		}
+		list_of_vertexEvent.Insert (list_of_vertexEvent.Count, ev);
+		if(OPTIONS.allEvent)
+		{
+			LoadPointEvent();
+		}
+	}
+	public void LoadPointEvent()
+	{
+		if (list_of_vertexEvent==null||list_of_vertexEvent.Count == 0)
+			return;
+		Fortune_.Vertex_Event ev=list_of_vertexEvent[list_of_vertexEvent.Count-1];
+		list_of_vertexEvent.Clear ();
 		MonoBehaviour.print ("addPointEvent");
 		if (list_of_Event == null) 
 		{
@@ -344,7 +385,8 @@ public class nameAlgorithm : MonoBehaviour {
 
 				vertexE=(Fortune_.Vertex_Event)ev;
 				MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
-				isTimetoReBuild=BTree.Delete(vertexE._branch);
+				if(OPTIONS.Delete)
+					isTimetoReBuild=BTree.Delete(vertexE._branch,ev.Y);
 
 				//BTree.Test ();
 				break;

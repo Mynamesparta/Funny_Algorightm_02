@@ -18,6 +18,7 @@ namespace Binary_Tree
 		//===================private==========================
 		void _normalized(Branch branch)
 		{
+			MonoBehaviour.print ("Hello ................");
 			if(branch==null)
 			{
 				MonoBehaviour.print ("Branch==null");
@@ -40,6 +41,11 @@ namespace Binary_Tree
 			{
 				parent.coner.left_data=branch.coner.left_data;
 				parent.coner.leftBranch=branch;
+				if(false&&parent.left_neighbour!=null)
+				{
+					parent.left_neighbour.coner.rightBranch=branch;
+					parent.left_neighbour.coner.right_data=branch.coner.left_data;
+				}
 				//branch.right_neighbour=parent;
 				//printEvent("parent.left:",parent.coner.left);
 			}
@@ -47,6 +53,11 @@ namespace Binary_Tree
 			{
 				parent.coner.right_data=branch.coner.left_data;
 				parent.coner.rightBranch=branch;
+				if(false&&parent.right_neighbour!=null)
+				{
+					parent.right_neighbour.coner.leftBranch=branch;
+					parent.right_neighbour.coner.left_data=branch.coner.left_data;
+				}
 				//branch.left_neighbour=parent;
 				//printEvent("parent.right:",parent.coner.right);
 			}
@@ -71,6 +82,11 @@ namespace Binary_Tree
 				{
 					parent.coner.right_data=branch.coner.left_data;
 					parent.coner.rightBranch=branch;
+					if(false&&parent.left_neighbour!=null)
+					{
+						parent.left_neighbour.coner.rightBranch=branch;
+						parent.left_neighbour.coner.right_data=branch.coner.left_data;
+					}
 					//branch.left_neighbour=parent;
 					//printEvent("parent.right:",parent.coner.right_data);
 				}
@@ -78,11 +94,17 @@ namespace Binary_Tree
 				{
 					parent.coner.left_data=branch.coner.left_data;
 					parent.coner.leftBranch=branch;
+					if(false&&parent.left_neighbour!=null)
+					{
+						parent.left_neighbour.coner.rightBranch=branch;
+						parent.left_neighbour.coner.right_data=branch.coner.left_data;
+					}
 					//branch.right_neighbour=parent;
 					//printEvent("parent.left:",parent.coner.left_data);
 				}
 			}
 		}
+		/*/
 		float getLimit(Branch branch)
 		{
 			if(branch.state==State_of_Branch.Node)
@@ -98,6 +120,7 @@ namespace Binary_Tree
 			}
 			return branch.coner.left_data.X;
 		}
+		/*/
 		//======================public=============================
 		public void Test()
 		{
@@ -130,6 +153,8 @@ namespace Binary_Tree
 		bool isFirstAdd=true;
 		public void Add(Fortune_.Site_Event data,float _y)
 		{
+			_Add (data, _y);
+			return;
 			if(data==null||data.vertex==null)
 			{
 				return ;
@@ -279,12 +304,13 @@ namespace Binary_Tree
 						//branch.printNeighbour();
 						//parent.printNeighbour();
 						addEvent(branch.left);
+						addEvent(branch.right);
 						addEvent(parent.right);
 
 						VoronoiEdge edge=new VoronoiEdge();
-						branch.vVertex=edge.first;
-						parent.vVertex=edge.second;
-
+						branch.setVoronoiVertex(edge.first,_y);
+						parent.setVoronoiVertex(edge.second,_y);
+						NA.LoadPointEvent();
 						return;
 						//
 					}
@@ -379,23 +405,228 @@ namespace Binary_Tree
 						{
 							addEvent(leftbranch_of_left_coner);
 							addEvent(leftbranch_of_right_coner);
-							leftbranch_of_left_coner.parent.vVertex=edge.first;
-							rightbranch_of_right_coner.parent.vVertex=parent.vVertex;
+							leftbranch_of_left_coner.parent.setVoronoiVertex(edge.first,_y);
+							rightbranch_of_right_coner.parent.setVoronoiVertex(parent.vVertex,_y);
 						}
 						else
 						{
 							addEvent(rightbranch_of_right_coner);
 							addEvent(rightbranch_of_left_coner);
-							leftbranch_of_left_coner.parent.vVertex=parent.vVertex;
-							rightbranch_of_right_coner.parent.vVertex=edge.first;
+							leftbranch_of_left_coner.parent.setVoronoiVertex(parent.vVertex,_y);
+							rightbranch_of_right_coner.parent.setVoronoiVertex(edge.first,_y);
 						}
-						parent.vVertex=edge.second;
-
+						parent.setVoronoiVertex(edge.second,_y);
+						NA.LoadPointEvent();
 						return ;
 					}
 				}
 			}
 			return ;
+		}
+		public void _Add(Fortune_.Site_Event data,float _y)
+		{
+			if (data == null || data.vertex == null) {
+				return;
+			}
+			//MonoBehaviour.print ("---------------------------------------------------------------");
+			MonoBehaviour.print ("hello new site:" + data.I);
+			float Key = data.X;
+			if (data == null)
+				MonoBehaviour.print ("data==null");
+			if (isFirstAdd) 
+			{
+				isFirstAdd = false;
+				//MonoBehaviour.print("new KING Site");
+				tree = new Branch ();
+				tree.data = data;
+				tree.state = State_of_Branch.Site;
+				lenght = 1;
+				return;
+			}
+			else
+			{
+				Branch parent=tree;
+				while(true)
+				{
+					if(parent.state==State_of_Branch.Node)
+					{
+						MonoBehaviour.print(parent.left.getLimit(_y)+"->"+Key+"->"+parent.right.getLimit(_y));
+						MonoBehaviour.print(parent.left.getLimit(_y)+"->"+parent.getLimit(_y)+"->"+parent.right.getLimit(_y));
+						parent.printNeighbourVertex();
+						MonoBehaviour.print("parent:"+parent.getLimit(_y));
+						if(Key<parent.getLimit(_y))
+						{
+							parent=parent.left;
+							MonoBehaviour.print("go left");
+							continue;
+						}
+						else
+						{
+							parent=parent.right;
+							MonoBehaviour.print ("go right");
+							continue;
+						}
+						if(parent.right.getLimit(_y)<Key)
+						{
+							parent=parent.right;
+							MonoBehaviour.print ("go right");
+							continue;
+						}
+						MonoBehaviour.print("find:"+parent.coner.left_data.I+"->"+data.I+"->"+parent.coner.right_data.I);
+
+						float leftLimit=float.NegativeInfinity,rightLimit=float.PositiveInfinity;
+						Branch grand_parent=parent;
+						bool isLeft=Key<grand_parent.getLimit(_y);
+						MonoBehaviour.print("grand_parent:"+grand_parent.middle);
+						if(isLeft)
+						{
+							if(grand_parent.left_neighbour!=null)
+							{
+								grand_parent.left_neighbour.printNeighbourVertex();
+								leftLimit=grand_parent.left_neighbour.getLimit(_y);
+							}
+							rightLimit=grand_parent.getLimit(_y);
+							parent=grand_parent.coner.leftBranch;
+						}
+						else
+						{
+							if(grand_parent.right_neighbour!=null)
+							{
+								rightLimit=grand_parent.right_neighbour.getLimit(_y);
+							}
+							leftLimit=grand_parent.getLimit(_y);
+							parent=grand_parent.coner.rightBranch;
+						}
+						
+						Branch branch=new Branch();
+						branch.left=new Branch();
+						branch.right=new Branch();
+						parent.left=branch;
+						parent.right=new Branch();
+						
+						parent.left.parent=parent;
+						parent.right.parent=parent;
+						branch.left.parent=branch;
+						branch.right.parent=branch;
+						
+						branch.state=parent.state=State_of_Branch.Node;
+						branch.left.state=branch.right.state=parent.right.state=State_of_Branch.Site;
+						
+						branch.isLeftBranch=branch.left.isLeftBranch=true;
+						branch.right.isLeftBranch=parent.right.isLeftBranch=false;
+						
+						branch.left.data=parent.right.data=parent.data;
+						branch.right.data=data;
+						
+						branch.coner.leftBranch=branch.left;
+						branch.coner.rightBranch=branch.right;
+						parent.coner.leftBranch=branch.right;
+						parent.coner.rightBranch=parent.right;
+
+						branch.right_neighbour=parent;
+						parent.left_neighbour=branch;
+						if(isLeft)
+						{
+							grand_parent.left_neighbour.right_neighbour=branch;
+							grand_parent.left_neighbour.coner.rightBranch=branch.left;
+							branch.left_neighbour=grand_parent.left_neighbour;
+							grand_parent.left_neighbour=parent;
+							grand_parent.coner.leftBranch=parent.right;
+							parent.right_neighbour=grand_parent;
+							//if(parent
+							 //addEvent(parent.right);
+						}
+						else
+						{
+							grand_parent.right_neighbour.left_neighbour=parent;
+							grand_parent.right_neighbour.coner.leftBranch=parent.right;
+							parent.right_neighbour=grand_parent.right_neighbour;
+							grand_parent.right_neighbour=branch;
+							grand_parent.coner.rightBranch=branch.left;
+							branch.left_neighbour=grand_parent;
+
+							//addEvent(branch.left);
+						}
+						MonoBehaviour.print(leftLimit+"->"+data.X+"->"+rightLimit);
+						if(data.X-leftLimit<rightLimit-data.X)
+						{
+							addEvent(branch.left);
+						}
+						else
+						{
+							addEvent(parent.right);
+						}
+						branch.reBuild(_y);
+						parent.reBuild(_y);
+						//addEvent(branch.left);
+						//addEvent(branch.right);
+
+						VoronoiEdge edge =new VoronoiEdge();
+						branch.setVoronoiVertex(edge.first,_y);
+						parent.setVoronoiVertex(edge.second,_y);
+						NA.LoadPointEvent();
+						return;
+					}
+					else
+					{
+						Branch branch=new Branch();
+						branch.left=new Branch();
+						branch.right=new Branch();
+						parent.left=branch;
+						parent.right=new Branch();
+						
+						parent.left.parent=parent;
+						parent.right.parent=parent;
+						branch.left.parent=branch;
+						branch.right.parent=branch;
+
+						branch.state=parent.state=State_of_Branch.Node;
+						branch.left.state=branch.right.state=parent.right.state=State_of_Branch.Site;
+
+						branch.isLeftBranch=branch.left.isLeftBranch=true;
+						branch.right.isLeftBranch=parent.right.isLeftBranch=false;
+
+						branch.left.data=parent.right.data=parent.data;
+						branch.right.data=data;
+
+						branch.coner.leftBranch=branch.left;
+						branch.coner.rightBranch=branch.right;
+						parent.coner.leftBranch=branch.right;
+						parent.coner.rightBranch=parent.right;
+
+						branch.right_neighbour=parent;
+						parent.left_neighbour=branch;
+						if(parent.parent!=null)
+						{
+							Branch grand_parent=parent.parent;
+							if(parent.isLeftBranch)
+							{
+								grand_parent.left_neighbour=parent;
+								parent.right_neighbour=parent.parent;
+								grand_parent.coner.leftBranch=grand_parent;
+
+								addEvent(parent.right);
+							}
+							else
+							{
+								grand_parent.right_neighbour=branch;
+								branch.left_neighbour=grand_parent;
+								grand_parent.coner.rightBranch=branch.left;
+
+								addEvent(branch.left);
+							}
+						}
+						//addEvent(branch.left);
+						//addEvent(branch.right);
+
+						VoronoiEdge edge =new VoronoiEdge();
+						branch.setVoronoiVertex(edge.first,_y);
+						parent.setVoronoiVertex(edge.second,_y);
+						NA.LoadPointEvent();
+						return;
+					}
+				}
+			}
 		}
 		public void addNeighbour(Branch branch)
 		{
@@ -436,9 +667,10 @@ namespace Binary_Tree
 				NA.AddPointEvent(ev);
 			}
 		}
-		public bool Delete(Branch branch)
+		public bool Delete(Branch branch,float _y)
 		{
-			if (branch.coner.left_data == null) 
+			return _Delete (branch, _y);
+			if (branch.coner.leftBranch == null) 
 			{
 				MonoBehaviour.print("delete null");
 				return false;
@@ -462,7 +694,7 @@ namespace Binary_Tree
 				parent.left_neighbour.right_neighbour=parent.right_neighbour;
 				if(b)
 				{
-					parent.left_neighbour.coner.right_data=parent.coner.right_data;
+					//parent.left_neighbour.coner.right_data=parent.coner.right_data;
 					parent.left_neighbour.coner.rightBranch=parent.coner.rightBranch;
 				}
 			}
@@ -471,10 +703,44 @@ namespace Binary_Tree
 				parent.right_neighbour.left_neighbour=parent.left_neighbour;
 				if(!b)
 				{
-					parent.right_neighbour.coner.left_data=parent.coner.left_data;
+					//parent.right_neighbour.coner.left_data=parent.coner.left_data;
 					parent.right_neighbour.coner.leftBranch=parent.coner.leftBranch;
 				}
 			}
+			Vector3 position;
+			VoronoiEdge edge = new VoronoiEdge ();
+			if(b)
+			{
+				if(parent.left_neighbour!=null)
+				{
+					parent.left_neighbour.reBuild(_y);
+					parent.reBuild(_y);
+					parent.left_neighbour.vVertex.endSearch();
+					parent.vVertex.endSearch();
+					position=parent.vVertex.postion;
+					parent.left_neighbour.vVertex=edge.first;
+					edge.second.postion=position;
+					edge.second.endSearch();
+				}
+			}
+			else
+			{
+				if(parent.right_neighbour!=null)
+				{
+					parent.right_neighbour.reBuild(_y);
+					parent.reBuild(_y);
+					if(parent.vVertex!=null)
+					{
+						position=parent.vVertex.postion;
+						parent.right_neighbour.vVertex.endSearch();
+						parent.vVertex.endSearch();
+						parent.right_neighbour.vVertex=edge.second;
+						edge.first.postion=position;
+						edge.first.endSearch();
+					}
+				}
+			}
+			//parent.ri
 			branch.destroy ();
 			if (b) 
 			{
@@ -521,6 +787,92 @@ namespace Binary_Tree
 			parent.destroy ();
 			return true;
 		}
+		
+		public bool _Delete(Branch branch,float _y)
+		{
+			if (branch.isDestroy) 
+			{
+				MonoBehaviour.print("delete null");
+				return false;
+			}
+			MonoBehaviour.print ("delete:" + branch.data.I);
+			if (branch.state == State_of_Branch.Node) 
+			{
+				MonoBehaviour.print("branch.state== Node");
+				return false;
+			}
+			Branch parent= branch.parent,grand_parent ;
+			if (parent == null) 
+			{
+				MonoBehaviour.print("something wrong:lenght of bTree = 1");
+				//tree=null;
+				return false;
+			}
+			grand_parent = parent.parent;
+			if(grand_parent==null)
+			{
+				MonoBehaviour.print("something wrong:lenght of bTree = 2");
+				return false;
+			}
+			parent.reBuild(_y);
+			parent.left_neighbour.reBuild(_y);
+			parent.right_neighbour.reBuild (_y);
+			Branch new_branch;
+			if(branch.isLeftBranch)
+			{
+				new_branch=parent.right;
+			}
+			else
+			{
+				new_branch=parent.left;
+			}
+			if(parent.isLeftBranch)
+			{
+				grand_parent.left=new_branch;
+			}
+			else
+			{
+				grand_parent.right=new_branch;
+			}
+
+			new_branch.parent = grand_parent;
+
+			new_branch.isLeftBranch = parent.isLeftBranch;
+
+			if(branch.isLeftBranch)
+			{
+				parent.left_neighbour.coner.rightBranch=parent.coner.rightBranch;
+			}
+			else
+			{
+				parent.right_neighbour.coner.leftBranch=parent.coner.leftBranch;
+			}
+			parent.left_neighbour.right_neighbour=parent.right_neighbour;
+			parent.right_neighbour.left_neighbour=parent.left_neighbour;
+
+			VoronoiEdge edge = new VoronoiEdge ();
+			edge.first.postion=new Vector3(parent.middle,branch.data.fun(parent.middle));
+			edge.first.endSearch ();
+			parent.vVertex.endSearch();
+			if(branch.isLeftBranch)
+			{
+				parent.left_neighbour.vVertex.endSearch();
+				parent.left_neighbour.vVertex=edge.second;
+			}
+			else
+			{
+				parent.right_neighbour.vVertex.endSearch();
+				parent.right_neighbour.vVertex=edge.second;
+			}
+			parent.destroy ();
+			return true;
+		}
+
+		bool getCenter(Branch node_1,Branch node_2,Fortune_.Site_Event data)
+		{
+			float mid = (node_1.middle + node_2.middle) / 2;
+			return data.X < mid;
+		}
 		public void printEvent(string text,Fortune_.Site_Event ev)
 		{
 			//MonoBehaviour.print (text + ev.getVector ().ToString ());
@@ -530,9 +882,25 @@ namespace Binary_Tree
 	public enum State_of_Branch{Site,Node};
 	public struct Coner
 	{
-		public Fortune_.Site_Event left_data;
+		public Fortune_.Site_Event left_data
+		{
+			get{ return leftBranch.data;}
+			set
+			{ 
+				if(leftBranch!=null)
+					leftBranch.data = value;
+			}
+		}
 		public Branch leftBranch;
-		public Fortune_.Site_Event right_data;
+		public Fortune_.Site_Event right_data
+		{
+			get{return rightBranch.data;}
+			set
+			{ 
+				if(rightBranch!=null)
+					rightBranch.data = value;
+			}
+		}
 		public Branch rightBranch;
 		public Line leftParabola, rightParabola;
 		
@@ -542,9 +910,30 @@ namespace Binary_Tree
 		bool isCheked;
 		public State_of_Branch state;
 		public bool isLeftBranch=true;
+		public bool isDestroy=false;
 		public Coner coner;
+		Fortune_.Site_Event _data;
+		public Fortune_.Site_Event data
+		{
+			get{ return _data;}
+			set{ _data = value;}
+		}
 		public float middle=float.NaN;
 		public VoronoiVertex vVertex;
+		/*/
+		public VoronoiVertex vVertex
+		{
+			get{ return _vVertex;}
+			set
+			{
+				if(coner.left_data!=null)
+				{
+					value.postion = new Vector3 (middle, coner.left_data.fun (middle));
+					_vVertex = value;
+				}
+			}
+		}
+		/*/
 		//public Fortune_.Site_Event data;
 		//float _key=0;
 		public Branch parent;
@@ -562,6 +951,11 @@ namespace Binary_Tree
 			NA.destroy += Destroy;
 			coner = new Coner ();
 		}
+		public void setVoronoiVertex(VoronoiVertex ver,float _y)
+		{
+			vVertex = ver;
+			reBuild (_y);
+		}
 		public void destroy()
 		{
 			NA.re_build -= reBuild;
@@ -572,10 +966,11 @@ namespace Binary_Tree
 			if(coner.rightParabola!=null)
 				coner.rightParabola.Clear ();
 			parent = null;
-			coner.left_data = coner.right_data = null;
 			coner.leftBranch = coner.rightBranch = null;
 			left = right = null;
 			left_neighbour = right_neighbour = null;
+			data = null;
+			isDestroy = true;
 		}
 		public void Destroy()
 		{
@@ -589,14 +984,14 @@ namespace Binary_Tree
 			if (state == State_of_Branch.Site)
 				return;
 			//MonoBehaviour.print ("its node");
-			if (coner.left_data == null||coner.right_data==null) 
+			if (coner.leftBranch == null||coner.rightBranch==null) 
 			{
 				//MonoBehaviour.print("coner.left==null");
 				return;
 			}
 			//MonoBehaviour.print ("its norm");
-			bool leftb = Fortune_.Function.buildParabola (ref coner.left_data, _y);
-			bool rightb = Fortune_.Function.buildParabola (ref coner.right_data, _y);
+			bool leftb = Fortune_.Function.buildParabola ( coner.left_data, _y);
+			bool rightb = Fortune_.Function.buildParabola ( coner.right_data, _y);
 			isCheked = !( leftb&&rightb);
 			//MonoBehaviour.print ("isCheked:"+isCheked.ToString());
 			if (true||!isCheked) 
@@ -605,7 +1000,7 @@ namespace Binary_Tree
 				if(vVertex!=null)
 				{
 					vVertex.postion=new Vector3(middle,coner.left_data.fun(middle));
-					if(middle<RectScene.begin_minW)
+					if(false&&middle<RectScene.begin_minW)
 					{
 						vVertex.endSearch();
 						vVertex=null;
@@ -643,7 +1038,10 @@ namespace Binary_Tree
 				if(coner.leftParabola==null)
 				{
 					coner.leftParabola=NA.addParabola (coner.left_data.fun, State_of_Line.Flesh, rect);
-					coner.leftParabola.setColor(NA.COLORS.CoastLine.start,NA.COLORS.CoastLine.end);
+					if(coner.leftParabola!=null)
+						coner.leftParabola.setColor(NA.COLORS.CoastLine.start,NA.COLORS.CoastLine.end);
+					else 
+						MonoBehaviour.print("something wrong");
 				}
 				else
 				{
@@ -659,7 +1057,10 @@ namespace Binary_Tree
 					if(coner.rightParabola==null)
 					{
 						coner.rightParabola=NA.addParabola (coner.right_data.fun, State_of_Line.Flesh, rect);
-						coner.rightParabola.setColor(NA.COLORS.CoastLine.start,NA.COLORS.CoastLine.end);
+						if(coner.rightParabola!=null)
+							coner.rightParabola.setColor(NA.COLORS.CoastLine.start,NA.COLORS.CoastLine.end);
+						else 
+							MonoBehaviour.print("something wrong");
 					}
 					else
 					{
@@ -704,7 +1105,7 @@ namespace Binary_Tree
 			}
 			else
 			{
-				if(false||parent==null)
+				if(false&&parent==null)
 				{
 					return coner.left_data.X;
 				}
@@ -787,7 +1188,29 @@ namespace Binary_Tree
 		}
 		public Vertex getVertex()
 		{
-			return coner.left_data.vertex;
+			return data.vertex;
+		}
+		public Site_Event getLeftData()
+		{
+			if(state== State_of_Branch.Node)
+			{
+				return coner.left_data;
+			}
+			else
+			{
+				return data;
+			}
+		}
+		public Site_Event getRightData()
+		{
+			if (state == State_of_Branch.Node) 
+			{
+				return coner.right_data;
+			}
+			else
+			{
+				return data;
+			}
 		}
 		
 	}
