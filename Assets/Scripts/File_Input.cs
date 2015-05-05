@@ -94,6 +94,8 @@ public class File_Input : MonoBehaviour {
 		{
 			line=text[i];
 			numbers=line.Split(',');
+			if(numbers.Length<2)
+				continue;
 			/*/
 			for(int j=0;j<numbers.Length;j++)
 			{

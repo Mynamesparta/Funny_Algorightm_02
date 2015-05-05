@@ -64,6 +64,7 @@
      <None Include="Assets\docs\Points_information\Circle.txt" />
      <None Include="Assets\docs\Points_information\Mynamesparta.txt" />
      <None Include="Assets\docs\Points_information\Chaos.txt" />
+     <None Include="Assets\docs\Points_information\Test_3.txt" />
      <None Include="Assets\docs\Points_information\Bag_3.txt" />
      <None Include="Assets\docs\Points_information\2_Point.txt" />
      <None Include="Assets\docs\Points_information\Point.txt" />
@@ -71,6 +72,7 @@
      <None Include="Assets\docs\Points_information\Fortune.txt" />
      <None Include="Assets\docs\Points_information\Line.txt" />
      <None Include="Assets\docs\Points_information\Bag_1.txt" />
+     <None Include="Assets\docs\Points_information\Line_2.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -116,11 +116,11 @@ namespace Fortune_
 			sevent.current_line_y = _y;
 			return true;
 		}
-		public static float getIntersection (Site_Event left,Site_Event right)
+		public static float getIntersection (Site_Event left,Site_Event right,bool isTimetoPrintResult=false)
 		{
 			if (left == null || right == null) 
 			{
-				return float.MaxValue;
+				return float.NaN;
 			}
 			float[] leftFun=left.CFun, rightFun=right.CFun;
 			if(leftFun==null)
@@ -136,9 +136,17 @@ namespace Fortune_
 			float[] cFun = new float[3];
 			for (int i=0; i<cFun.Length; i++)
 				cFun [i] = leftFun [i] - rightFun [i];
+			if(isTimetoPrintResult)
+			{
+				MonoBehaviour.print("Index:"+left.I+"->"+right.I);
+				MonoBehaviour.print("cFun:"+cFun[0]+"->"+cFun[1]+"->"+cFun[2]);
+			}
 			if (cFun [0] == 0) 
 			{
-				return -cFun[2]/cFun[1];
+				if(cFun[1]!=0)
+				{
+					return -cFun[2]/cFun[1];
+				}
 			}
 			float x_1, x_2;
 			float D = cFun [1] * cFun [1] - 4 * cFun [0] * cFun [2];
@@ -303,6 +311,11 @@ namespace Fortune_
 			_y = y;
 			_branch = branch;
 		}
+		public void Clear()
+		{
+			_branch = null;
+			center = new Vector3 ();
+		}
 		public Binary_Tree.Branch _branch;
 		public Vector3 center;
 	}
@@ -347,8 +360,11 @@ namespace Fortune_
 		{
 			//MonoBehaviour.print ("build Voronoi Edge");
 			//MonoBehaviour.print (first.postion.ToString () + "->" + second.postion.ToString ());
-			if(NA.OPTIONS.VoloronoiEdge)
-				NA.addLine (line, State_of_Line.Flesh, first.postion, second.postion);
+			if (NA.OPTIONS.VoloronoiEdge) 
+			{
+				if(!float.IsInfinity(first.position.y)&&!float.IsInfinity(second.position.y))
+					NA.addLine (line, State_of_Line.Flesh, first.position, second.position);
+			}
 		}
 	}
 	public class VoronoiVertex
@@ -357,7 +373,7 @@ namespace Fortune_
 		bool isFirst;
 		bool isEditable=true;
 		Vector3 _position;
-		public Vector3 postion
+		public Vector3 position
 		{
 			get{ return _position;}
 			set{ _position = (isEditable ? value : _position);}

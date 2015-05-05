@@ -50,6 +50,9 @@ public struct Option
 	public bool VoloronoiEdge;
 	public bool allEvent;
 	public bool Delete;
+	public bool OneEventForOneBranch;
+	public bool addAllPointEvent;
+	public float Epcilon_for_Point_event;
 }
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
@@ -271,6 +274,11 @@ public class nameAlgorithm : MonoBehaviour {
 		{
 			list_of_vertexEvent.Add(ev);
 			MonoBehaviour.print("Count:"+list_of_vertexEvent.Count);
+			if(OPTIONS.allEvent)
+			{
+				LoadPointEvent();
+			}
+			return;
 		}
 		for (int i=0;i<list_of_vertexEvent.Count;i++) 
 		{
