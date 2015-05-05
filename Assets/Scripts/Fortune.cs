@@ -136,7 +136,7 @@ namespace Fortune_
 			float[] cFun = new float[3];
 			for (int i=0; i<cFun.Length; i++)
 				cFun [i] = leftFun [i] - rightFun [i];
-			if(isTimetoPrintResult)
+			if(false&&isTimetoPrintResult)
 			{
 				MonoBehaviour.print("Index:"+left.I+"->"+right.I);
 				MonoBehaviour.print("cFun:"+cFun[0]+"->"+cFun[1]+"->"+cFun[2]);
@@ -202,14 +202,14 @@ namespace Fortune_
 				left=parent.coner.left_data;
 				right=parent.right_neighbour.coner.right_data;
 			}
-			MonoBehaviour.print (left.I + "+" + branch.data.I + "+" + right.I);
+			//MonoBehaviour.print (left.I + "+" + branch.data.I + "+" + right.I);
 			Vector3 center = getCenter (left.getVector(), branch.getVertex ().getPos (), right.getVector());
 			y = center.y - Vector3.Distance (center, branch.getVertex ().getPos ());
 			if (float.IsNaN (y))
 				return false;
 			if (float.IsInfinity (y))
 				return false;
-			MonoBehaviour.print ("Y:" + y);
+			//MonoBehaviour.print ("Y:" + y);
 			return true;
 		}
 	}

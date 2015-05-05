@@ -460,10 +460,13 @@ public class Controller : MonoBehaviour {
 		SCRIPTS.recorder.StartCreate ();
 		state = State_of_Controller.Play;
 		_canvas.Edit (name_of_Button.Play, true);
-		_canvas.inScene(name_of_Button.Recorder_speed,true);
+		_canvas.inScene(name_of_Button.Recorder_speed,false);
 		_canvas.inScene(name_of_Button.FileList,false);
+		_canvas.inScene (name_of_Button.Play, false);
+		_canvas.inScene (name_of_Button.Edit, false);
+		_canvas.inScene (name_of_Button.Loading, true);
 		//_canvas.inScene(4,true);
-		_canvas.TimeToRecorder (true);
+		//_canvas.TimeToRecorder (true);
 		for (int i=0; i<lines.Count; i++)
 			Object.Destroy (lines [i].gameObject);
 		lines.Clear ();
@@ -484,6 +487,16 @@ public class Controller : MonoBehaviour {
 			}
 		}
 		/*/
+	}
+	public void StartPlaying()
+	{
+		_canvas.inScene (name_of_Button.Loading, false);
+		_canvas.Edit (name_of_Button.Play, true);
+		_canvas.inScene(name_of_Button.Recorder_speed,true);
+		_canvas.inScene (name_of_Button.Play, true);
+		_canvas.inScene (name_of_Button.Edit, true);
+		//_canvas.inScene(4,true);
+		_canvas.TimeToRecorder (true);
 	}
 	public State_of_Controller getState()
 	{

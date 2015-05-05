@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Fortune_;
+using System.Threading;
 
 [System.Serializable]
 public enum _NameAlgorithm{Fortune=0,Kyle_Kirkpatrick=3,Andrew_Edwin,Graham,Last };
@@ -67,7 +68,7 @@ public class nameAlgorithm : MonoBehaviour {
 	public Option OPTIONS;
 	//public bool FullBeachLine=true;
 
-	public delegate void Algorightm();
+	public delegate IEnumerator Algorightm();
 	private _NameAlgorithm state;
 	private Recorder record;
 	private int lenght=6;
@@ -100,10 +101,9 @@ public class nameAlgorithm : MonoBehaviour {
 		}
 		record.StartCreate ();
 		if (algo != null)
-			algo ();
+			StartCoroutine(algo ());
 		else
 			print ("algo=null");
-		record.StartPlay();
 		//record.Play();
 	}
 	static void _Test()
@@ -192,7 +192,7 @@ public class nameAlgorithm : MonoBehaviour {
 	public Line addParabola(Fortune_.Fun fun,State_of_Line state,RectScene rect)
 	{
 		_fun = Fortune_.Function.buildFun (fun, rect,delta_X);
-		MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
+		//MonoBehaviour.print ("lenght_of_fun:"+_fun.Count);
 		//if (_fun.Count < 10)
 		//	return null;
 		Line line = contr.createLine ();
@@ -236,6 +236,11 @@ public class nameAlgorithm : MonoBehaviour {
 		GetComponent<UnityEngine.UI.Scrollbar> ().value=((float)name)/lenght;
 		Set ();
 	}
+	public void endOfAlgorightm()
+	{
+		record.StartPlay ();
+		contr.StartPlaying ();
+	}
 	//=====================================Fortune================
 	void Update()
 	{
@@ -258,7 +263,7 @@ public class nameAlgorithm : MonoBehaviour {
 	List<Fortune_.Vertex_Event> list_of_vertexEvent;
 	public void AddPointEvent(Fortune_.Vertex_Event ev)
 	{
-		MonoBehaviour.print ("addPointEvent");
+		//MonoBehaviour.print ("addPointEvent");
 		if (list_of_vertexEvent == null) 
 		{
 			list_of_vertexEvent=new List<Vertex_Event>();
@@ -267,13 +272,13 @@ public class nameAlgorithm : MonoBehaviour {
 		}
 		if(ev.Y>cur_Y)
 		{
-			MonoBehaviour.print("ev.Y > current Y");
+			//MonoBehaviour.print("ev.Y > current Y");
 			//return;
 		}
 		if (list_of_vertexEvent.Count == 0) 
 		{
 			list_of_vertexEvent.Add(ev);
-			MonoBehaviour.print("Count:"+list_of_vertexEvent.Count);
+			//MonoBehaviour.print("Count:"+list_of_vertexEvent.Count);
 			if(OPTIONS.allEvent)
 			{
 				LoadPointEvent();
@@ -285,7 +290,7 @@ public class nameAlgorithm : MonoBehaviour {
 			if(list_of_vertexEvent[i].Y<ev.Y)
 			{
 				list_of_vertexEvent.Insert(i,ev);
-				MonoBehaviour.print("Count:"+list_of_vertexEvent.Count);
+				//MonoBehaviour.print("Count:"+list_of_vertexEvent.Count);
 				return;
 			}
 		}
@@ -301,28 +306,28 @@ public class nameAlgorithm : MonoBehaviour {
 			return;
 		Fortune_.Vertex_Event ev=list_of_vertexEvent[list_of_vertexEvent.Count-1];
 		list_of_vertexEvent.Clear ();
-		MonoBehaviour.print ("addPointEvent");
+		//MonoBehaviour.print ("addPointEvent");
 		if (list_of_Event == null) 
 		{
-			MonoBehaviour.print("list_of_Event==null");
+			//MonoBehaviour.print("list_of_Event==null");
 			return;
 		}
 		if(ev.Y>cur_Y)
 		{
-			MonoBehaviour.print("ev.Y > current Y");
+			//MonoBehaviour.print("ev.Y > current Y");
 			//return;
 		}
 		if (list_of_Event.Count == 0) 
 		{
 			list_of_Event.Add(ev);
-			MonoBehaviour.print("Count:"+list_of_Event.Count);
+			//MonoBehaviour.print("Count:"+list_of_Event.Count);
 		}
 		for (int i=0;i<list_of_Event.Count;i++) 
 		{
 			if(list_of_Event[i].Y<ev.Y)
 			{
 				list_of_Event.Insert(i,ev);
-				MonoBehaviour.print("Count:"+list_of_Event.Count);
+				//MonoBehaviour.print("Count:"+list_of_Event.Count);
 				return;
 			}
 		}
@@ -336,7 +341,7 @@ public class nameAlgorithm : MonoBehaviour {
 		}
 		list_of_edge.Add (edge);
 	}
-	public void Fortune_algorithm ()
+	public IEnumerator Fortune_algorithm ()
 	{
 		Line Sweep= addLine (new Vector3 (-lenght_of_SweepLine/2, 300), new Vector3 (lenght_of_SweepLine/2, 300), State_of_Line.Flesh);
 		Sweep.setColor (COLORS.SweepLine.start, COLORS.SweepLine.end);
@@ -363,13 +368,13 @@ public class nameAlgorithm : MonoBehaviour {
 		float lastBuild=-1000f;
 		while(list_of_Event.Count>0) 
 		{
-			MonoBehaviour.print("=================before="+Index_of_Step+"==============");
+			//MonoBehaviour.print("=================before="+Index_of_Step+"==============");
 			isTimetoReBuild=true;
 			Index_of_Step++;
 			Fortune_.Event ev=list_of_Event[0];
 			list_of_Event.RemoveAt(0);
 			cur_Y=ev.Y;
-			MonoBehaviour.print("Count:"+list_of_Event.Count);
+			//MonoBehaviour.print("Count:"+list_of_Event.Count);
 			addLine(Sweep,State_of_Line.Flesh,new Vector3 (-lenght_of_SweepLine/2, ev.Y-0.05f), new Vector3 (lenght_of_SweepLine/2, ev.Y-0.05f));
 			record.setWithoutPause(true);
 			switch(ev.getEvent())
@@ -377,10 +382,10 @@ public class nameAlgorithm : MonoBehaviour {
 			case Fortune_.EVENT.Site:
 			{
 				//====================Site=Event================
-				BTree.Test ();
+				//BTree.Test ();
 
 				siteE=(Fortune_.Site_Event) ev;
-				MonoBehaviour.print("Site_Evenet:"+siteE.Y);
+				//MonoBehaviour.print("Site_Evenet:"+siteE.Y);
 				BTree.Add(siteE,ev.Y);
 
 				break;
@@ -389,10 +394,10 @@ public class nameAlgorithm : MonoBehaviour {
 			case Fortune_.EVENT.Vertex:
 			{
 				//============================Vertex=Event========
-				BTree.Test ();
+				//BTree.Test ();
 
 				vertexE=(Fortune_.Vertex_Event)ev;
-				MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
+				//MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
 				if(OPTIONS.Delete)
 					isTimetoReBuild=BTree.Delete(vertexE._branch,ev.Y);
 
@@ -401,22 +406,22 @@ public class nameAlgorithm : MonoBehaviour {
 				//================================================
 			}
 			}
-			BTree.Test ();
-			MonoBehaviour.print("=================after===============");
-			MonoBehaviour.print("=================rebuild=============");
+			//BTree.Test ();
+			//MonoBehaviour.print("=================after===============");
+			//MonoBehaviour.print("=================rebuild=============");
 			if(isTimetoReBuild)
 			{
 				re_build(ev.Y-0.05f);
 				lastBuild=ev.Y-0.05f;
 				BTree.Test ();
-				MonoBehaviour.print("=================build===============");
+				//MonoBehaviour.print("=================build===============");
 				if (build != null)
 				{
 					build ();
 				}
 				record.setWithoutPause(false);
 			}
-
+			yield return new WaitForSeconds(0.0f);
 		}
 		//
 		lastBuild += 1f;
@@ -439,6 +444,7 @@ public class nameAlgorithm : MonoBehaviour {
 		//
 		if (destroy != null)
 			destroy ();
+		endOfAlgorightm ();
 	}
 	//=====================================Kyle=Kirkpatrick================
 	List<Vector3> _fun;
@@ -484,7 +490,7 @@ public class nameAlgorithm : MonoBehaviour {
 	{
 		return first.getPos ().y > second.getPos ().y;
 	}
-	public void Kyle_Kirkpatrick()
+	public IEnumerator Kyle_Kirkpatrick()
 	{
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
 		List<Vertex> leftConer=new List<Vertex>(), rightConer=new List<Vertex>();
@@ -537,6 +543,7 @@ public class nameAlgorithm : MonoBehaviour {
 				min=vertexs[i];
 				max=vertexs[i];
 			}
+			yield return new WaitForSeconds(0.0f);
 		}
 		leftConer.Add(min);
 		rightConer.Add(max);
@@ -552,7 +559,8 @@ public class nameAlgorithm : MonoBehaviour {
 		if (leftConer.Count < 2) 
 		{
 			print ("Somithing Strange!!!");
-			return ;
+			//yield return new YieldInstruction();
+			goto end;
 		}
 		Vector3 last = (new Vector3 (1, 0,0))+leftConer[0].getPos();
 		_Kyle_Kirkpatrick (leftConer,last, 0);
@@ -567,6 +575,8 @@ public class nameAlgorithm : MonoBehaviour {
 		{
 			addLine (rightConer[leftConer.Count-1], leftConer [0],State_of_Line.Without_Restrictions);
 		}
+	end:;
+		endOfAlgorightm ();
 	}
 	//=================================Andrew=Edwin==============================================
 	bool _isGreaterAndrew_Edwin(Vertex first,Vertex second)
@@ -618,7 +628,7 @@ public class nameAlgorithm : MonoBehaviour {
 			}
 		}
 	}
-	public void Andrew_Edwin()
+	public IEnumerator Andrew_Edwin()
 	{
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
 		List<Vertex> leftConer=new List<Vertex>(), rightConer=new List<Vertex>();
@@ -639,12 +649,14 @@ public class nameAlgorithm : MonoBehaviour {
 				Down.Add(point_3);
 				vertexs[i].setColor(3);
 			}
+			yield return new WaitForSeconds(0.0f);
 		}
 		addLine (_Piece_of_Cake, State_of_Line.End_Time);
 		searchAndrew_Edwin (Up, Down [0]);
 		Down.Insert (0,Up [0]);
 		Down.Insert (Down.Count,Up[Up.Count-1]);
 		searchAndrew_Edwin(Down,Up[1]);
+		endOfAlgorightm ();
 
 	}
 	//=================================Graham==============================================
@@ -675,7 +687,7 @@ public class nameAlgorithm : MonoBehaviour {
 		second = second - center;
 		return first.x*second.y-first.y*second.x<0;
 	}
-	public void Graham()
+	public IEnumerator Graham()
 	{
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
 		Vector3 min, max;
@@ -774,8 +786,10 @@ public class nameAlgorithm : MonoBehaviour {
 				continue;
 			}
 			Iter++;
+			yield return new WaitForSeconds(0.0f);
 		}
 		print (Iter);
+		endOfAlgorightm ();
 		//contr.Delete_vertex (ver);
 	}
 	//=================================Last==============================================
@@ -841,7 +855,7 @@ public class nameAlgorithm : MonoBehaviour {
 		return true;
 	}
 	List<Vertex> resultLast;
-	public void Last()
+	public IEnumerator Last()
 	{
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
 		vertexs = Sort (vertexs, _isGreaterAndrew_Edwin);
@@ -860,6 +874,7 @@ public class nameAlgorithm : MonoBehaviour {
 				Down.Add(vertexs[i]);
 				vertexs[i].setColor(3);
 			}
+			yield return new WaitForSeconds(0.0f);
 		}
 		resultLast = new List<Vertex> ();
 		_Last (left.getPos(), right.getPos(), Up);
@@ -868,5 +883,6 @@ public class nameAlgorithm : MonoBehaviour {
 
 		}
 		_Last (right.getPos (), left.getPos (), Down);
+		endOfAlgorightm ();
 	}
 }

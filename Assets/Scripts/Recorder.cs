@@ -133,7 +133,7 @@ public class Recorder : MonoBehaviour {
 
 	public void StartCreate()
 	{
-		StopAllCoroutines ();
+		//StopAllCoroutines ();
 		if(Scenario!=null)
 			toBegin ();
 		if(Scenario==null)

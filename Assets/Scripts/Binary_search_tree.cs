@@ -147,8 +147,8 @@ namespace Binary_Tree
 				//parent.printNeighbourVertex ();
 			}
 			//text += parent.coner.right_data.I.ToString ();
-			MonoBehaviour.print ("train:"+text);
-			MonoBehaviour.print ("train_2:" + text_2);
+			//MonoBehaviour.print ("train:"+text);
+			//MonoBehaviour.print ("train_2:" + text_2);
 		}
 		bool isFirstAdd=true;
 		public void Add(Fortune_.Site_Event data,float _y)
@@ -160,7 +160,7 @@ namespace Binary_Tree
 				return ;
 			}
 			 //MonoBehaviour.print ("---------------------------------------------------------------");
-			MonoBehaviour.print ("hello new site:"+data.I);
+			//MonoBehaviour.print ("hello new site:"+data.I);
 			float Key = data.X;
 			bool isFind = false;
 			if (data == null)
@@ -329,8 +329,8 @@ namespace Binary_Tree
 							parent=parent.right;
 							continue;
 						}
-						 MonoBehaviour.print("I need some magic");
-						MonoBehaviour.print("My neighbour vertex:"+parent.coner.left_data.I+","+parent.coner.right_data.I);
+						 //MonoBehaviour.print("I need some magic");
+						//MonoBehaviour.print("My neighbour vertex:"+parent.coner.left_data.I+","+parent.coner.right_data.I);
 						//return;
 						Branch leftbranch_of_left_coner=new Branch(),rightbranch_of_left_coner=new Branch();
 						Branch leftbranch_of_right_coner=new Branch(),rightbranch_of_right_coner=new Branch();
@@ -429,7 +429,7 @@ namespace Binary_Tree
 				return;
 			}
 			//MonoBehaviour.print ("---------------------------------------------------------------");
-			MonoBehaviour.print ("hello new site:" + data.I);
+			//MonoBehaviour.print ("hello new site:" + data.I);
 			float Key = data.X;
 			if (data == null)
 				MonoBehaviour.print ("data==null");
@@ -450,20 +450,20 @@ namespace Binary_Tree
 				{
 					if(parent.state==State_of_Branch.Node)
 					{
-						MonoBehaviour.print(parent.left.getLimit(_y)+"->"+Key+"->"+parent.right.getLimit(_y));
-						MonoBehaviour.print(parent.left.getLimit(_y)+"->"+parent.getLimit(_y)+"->"+parent.right.getLimit(_y));
+						//MonoBehaviour.print(parent.left.getLimit(_y)+"->"+Key+"->"+parent.right.getLimit(_y));
+						//MonoBehaviour.print(parent.left.getLimit(_y)+"->"+parent.getLimit(_y)+"->"+parent.right.getLimit(_y));
 						//parent.printNeighbourVertex();
-						MonoBehaviour.print("parent:"+parent.getLimit(_y));
+						//MonoBehaviour.print("parent:"+parent.getLimit(_y));
 						if(Key<parent.getLimit(_y))
 						{
 							parent=parent.left;
-							MonoBehaviour.print("go left");
+							//MonoBehaviour.print("go left");
 							continue;
 						}
 						else
 						{
 							parent=parent.right;
-							MonoBehaviour.print ("go right");
+							//MonoBehaviour.print ("go right");
 							continue;
 						}
 					}
@@ -548,7 +548,7 @@ namespace Binary_Tree
 									branch.left_neighbour=grand_parent;
 								}
 							}
-							MonoBehaviour.print(leftLimit+"->"+Key+"->"+rightLimit);
+							//MonoBehaviour.print(leftLimit+"->"+Key+"->"+rightLimit);
 							if(false&&grand_parent!=null)
 							{
 								if(Key-leftLimit<rightLimit-Key)
@@ -621,7 +621,7 @@ namespace Binary_Tree
 			{
 				ev=new Fortune_.Vertex_Event(branch,y);
 				//NA.deletePointEvent(ev);
-				MonoBehaviour.print ("_Y:" + y);
+				//MonoBehaviour.print ("_Y:" + y);
 				branch._event=ev;
 				NA.AddPointEvent(ev);
 			}
@@ -755,44 +755,44 @@ namespace Binary_Tree
 				return false;
 			if (branch.isDestroy) 
 			{
-				MonoBehaviour.print("delete null");
+				//MonoBehaviour.print("delete null");
 				return false;
 			}
-			MonoBehaviour.print ("delete:" + branch.data.I);
+			//MonoBehaviour.print ("delete:" + branch.data.I);
 			if (branch.state == State_of_Branch.Node) 
 			{
-				MonoBehaviour.print("branch.state== Node");
+				//MonoBehaviour.print("branch.state== Node");
 				return false;
 			}
 			Branch parent= branch.parent,grand_parent ;
 			if (parent == null) 
 			{
-				MonoBehaviour.print("something wrong:lenght of bTree = 1");
+				//MonoBehaviour.print("something wrong:lenght of bTree = 1");
 				//tree=null;
 				return false;
 			}
 			grand_parent = parent.parent;
 			if(grand_parent==null)
 			{
-				MonoBehaviour.print("something wrong:lenght of bTree = 2");
+				//MonoBehaviour.print("something wrong:lenght of bTree = 2");
 				return false;
 			}
 			if(parent.left_neighbour==null||parent.right_neighbour==null)
 			{
-				MonoBehaviour.print("something wrong:...");
+				//MonoBehaviour.print("something wrong:...");
 				return false;
 			}
 			parent.reBuild(_y,true);
 			parent.left_neighbour.reBuild(_y,true);
 			parent.right_neighbour.reBuild (_y,true);
 			float d = branch.getDistance_of_Arc ();
-			MonoBehaviour.print("YOU CANT DELETE ME MYXAXAXAXAXAXAXAXAXA(distance:"+d+")");
+			//MonoBehaviour.print("YOU CANT DELETE ME MYXAXAXAXAXAXAXAXAXA(distance:"+d+")");
 			if(float.IsNaN(d)||d>NA.OPTIONS.Epcilon_for_Point_event)
 			{
-				MonoBehaviour.print("MYXAXAXAXAXAXAXAXAXA");
+				//MonoBehaviour.print("MYXAXAXAXAXAXAXAXAXA");
 				return false;
 			}
-			MonoBehaviour.print ("okay :(");
+			//MonoBehaviour.print ("okay :(");
 			Branch new_branch;
 			if(branch.isLeftBranch)
 			{
@@ -1234,7 +1234,7 @@ namespace Binary_Tree
 				}
 				leftLimit=parent.middle;
 			}
-			MonoBehaviour.print ("Limit:" + leftLimit + "->" + data.X + "->" + rightLimit);
+			//MonoBehaviour.print ("Limit:" + leftLimit + "->" + data.X + "->" + rightLimit);
 			return Math.Abs( rightLimit - leftLimit);
 		}
 		

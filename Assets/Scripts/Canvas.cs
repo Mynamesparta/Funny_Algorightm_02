@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 [System.Serializable]
 public enum name_of_Button{NameAlgorithm=0,Edit=1,Play=2,Pause=3,Rewinding01=4,Rewinding02=5,
-							toBegin=6,toEnd=7,Recorder_speed=8,FileList=9};
+							toBegin=6,toEnd=7,Recorder_speed=8,Loading=9,FileList=10};
 public class Canvas : MonoBehaviour {
 
 	public Recorder recorder;
