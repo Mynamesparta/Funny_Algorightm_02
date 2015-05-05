@@ -497,6 +497,7 @@ public class Controller : MonoBehaviour {
 		_canvas.inScene (name_of_Button.Edit, true);
 		//_canvas.inScene(4,true);
 		_canvas.TimeToRecorder (true);
+		SCRIPTS.recorder.Play ();
 	}
 	public State_of_Controller getState()
 	{

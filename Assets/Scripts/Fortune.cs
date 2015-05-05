@@ -116,7 +116,7 @@ namespace Fortune_
 			sevent.current_line_y = _y;
 			return true;
 		}
-		public static float getIntersection (Site_Event left,Site_Event right,bool isTimetoPrintResult=false)
+		public static float getIntersection (Site_Event left,Site_Event right)
 		{
 			if (left == null || right == null) 
 			{
@@ -136,10 +136,10 @@ namespace Fortune_
 			float[] cFun = new float[3];
 			for (int i=0; i<cFun.Length; i++)
 				cFun [i] = leftFun [i] - rightFun [i];
-			if(false&&isTimetoPrintResult)
+			if(true)
 			{
-				MonoBehaviour.print("Index:"+left.I+"->"+right.I);
-				MonoBehaviour.print("cFun:"+cFun[0]+"->"+cFun[1]+"->"+cFun[2]);
+				//MonoBehaviour.print("Index:"+left.I+"->"+right.I);
+				//MonoBehaviour.print("cFun:"+cFun[0]+"->"+cFun[1]+"->"+cFun[2]);
 			}
 			if (cFun [0] == 0) 
 			{
@@ -150,10 +150,11 @@ namespace Fortune_
 			}
 			float x_1, x_2;
 			float D = cFun [1] * cFun [1] - 4 * cFun [0] * cFun [2];
+			//MonoBehaviour.print (D);
 			if(D<0)
 			{
-				Console.WriteLine("Something wrong D<0 hm......");
-				return 0f;
+				//MonoBehaviour.print("Something wrong D<0 hm......");
+				return float.NaN;
 			}
 			D = (float)Math.Sqrt (D);
 			x_1 = (-cFun [1] + D) / (2*cFun [0]);
@@ -363,7 +364,19 @@ namespace Fortune_
 			if (NA.OPTIONS.VoloronoiEdge) 
 			{
 				if(!float.IsInfinity(first.position.y)&&!float.IsInfinity(second.position.y))
-					NA.addLine (line, State_of_Line.Flesh, first.position, second.position);
+					if(first.position!=Vector3.zero&&second.position!=Vector3.zero)
+						NA.addLine (line, State_of_Line.Flesh, first.position, second.position);
+			}
+		}
+		public void Clear(bool b)
+		{
+			if(b)
+			{
+				first.position=second.position;
+			}
+			else
+			{
+				second.position=first.position;
 			}
 		}
 	}
@@ -382,8 +395,19 @@ namespace Fortune_
 		{
 			parent = edge;
 			isFirst = b;
+			_position = Vector3.zero;
 		}
 
+		public void endSearch(Vector3 vec)
+		{
+			_position = vec;
+			isEditable = false;
+			parent.endSearch ();
+		}
+		public void Clear()
+		{
+			parent.Clear (isFirst);
+		}
 		public void endSearch()
 		{
 			isEditable = false;
