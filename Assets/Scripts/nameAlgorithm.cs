@@ -54,6 +54,8 @@ public struct Option
 	public bool OneEventForOneBranch;
 	public bool addAllPointEvent;
 	public float Epcilon_for_Point_event;
+	public bool FullBuild;
+	public float speedOfAlgorightm;
 }
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
@@ -366,12 +368,27 @@ public class nameAlgorithm : MonoBehaviour {
 		int Index_of_Step = 0;
 		bool isTimetoReBuild;
 		float lastBuild=-1000f;
+		cur_Y = 200;
 		while(list_of_Event.Count>0) 
 		{
 			//MonoBehaviour.print("=================before="+Index_of_Step+"==============");
 			isTimetoReBuild=true;
 			Index_of_Step++;
 			Fortune_.Event ev=list_of_Event[0];
+			if(OPTIONS.FullBuild&&cur_Y-ev.Y>OPTIONS.speedOfAlgorightm)
+			{
+				cur_Y-=OPTIONS.speedOfAlgorightm;
+				addLine(Sweep,State_of_Line.Flesh,new Vector3 (-lenght_of_SweepLine/2, cur_Y), new Vector3 (lenght_of_SweepLine/2, cur_Y));
+				if(re_build!=null)
+				{
+					record.setWithoutPause(true);
+					re_build(cur_Y);
+					build();
+					record.setWithoutPause(false);
+				}
+				yield return new WaitForSeconds(0.0f);
+				continue;
+			}
 			list_of_Event.RemoveAt(0);
 			cur_Y=ev.Y;
 			//MonoBehaviour.print("Count:"+list_of_Event.Count);
@@ -386,7 +403,7 @@ public class nameAlgorithm : MonoBehaviour {
 
 				siteE=(Fortune_.Site_Event) ev;
 				//MonoBehaviour.print("Site_Evenet:"+siteE.Y);
-				BTree.Add(siteE,ev.Y);
+				BTree.Add(siteE,ev.Y-0.05f);
 
 				break;
 				//===============================================

@@ -45,6 +45,7 @@ public class Line : MonoBehaviour {
 	}
 	public void Add(Vector3 vec)
 	{
+		return;
 		line_renderer.SetVertexCount (list.Count);
 		line_renderer.SetPosition (list.Count - 1, vec);
 	}
@@ -127,7 +128,7 @@ public class Line : MonoBehaviour {
 			Index++;
 			if(Index==function.Count)
 			{
-				Add(function[Index-1]);
+				list.Add(function[Index-1]);
 				return;
 			}
 			distance = Vector3.Distance (function [Index-1], function [Index]);
@@ -264,7 +265,7 @@ public class Line : MonoBehaviour {
 				isChanged = true;
 				Index++;
 				if (Index == function.Count) {
-					Add (function [Index - 1]);
+					list.Add (function [Index - 1]);
 					return;
 				}
 				distance = Vector3.Distance (function [Index - 1], function [Index]);

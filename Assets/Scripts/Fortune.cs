@@ -395,7 +395,7 @@ namespace Fortune_
 		{
 			parent = edge;
 			isFirst = b;
-			_position = Vector3.zero;
+			_position = new Vector3(-1000,-1000,-1000);
 		}
 
 		public void endSearch(Vector3 vec)
