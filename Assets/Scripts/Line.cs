@@ -125,6 +125,7 @@ public class Line : MonoBehaviour {
 		{
 			_speed-=distance;
 			isChanged=true;
+			//list.Add(function[Index]);
 			Index++;
 			if(Index==function.Count)
 			{

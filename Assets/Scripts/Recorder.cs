@@ -11,6 +11,7 @@ public class ListofScenario
 	public int color;
 	//---------------------------------
 	public bool WithoutPause=false;
+	public bool Pause=false;
 	public void Play()
 	{
 		if(line!=null)
@@ -71,6 +72,7 @@ public struct PauseTime
 }
 public class Recorder : MonoBehaviour {
 	public PauseTime PAUSE_TIME;
+	[Range(1, 5)]
 	public int Speed = 2;
 	public bool Rewinding_by_Block=false;
 
@@ -82,6 +84,7 @@ public class Recorder : MonoBehaviour {
 	private int Iteration=0;
 	private bool isTimetoPlay=false;
 	private bool withoutPause=false;
+	private bool PauseTime=false;
 
 	void Awake()
 	{
@@ -109,22 +112,27 @@ public class Recorder : MonoBehaviour {
 		//print ("Test");
 		for(;Iteration<Scenario.Count;Iteration++)
 		{
+			if(Scenario[Iteration].Pause)
+			{
+				Pause();
+			}
 			if(!Scenario[Iteration].WithoutPause)
 			{
 				if(Scenario[Iteration].isPoint())
 					yield return new WaitForSeconds(PAUSE_TIME.ForPoint);
 				else
 					yield return new WaitForSeconds(lineSpeed);
-				while(!isTimetoPlay)
-					yield return new WaitForSeconds(0.1f);
 			}
 			//
-			if(Iteration>=Scenario.Count)
+			if(!isTimetoPlay)
+				break;
+			if(Iteration>=Scenario.Count||Iteration<0)
 			{
 				print("Welcome to League oF BOOMMMMMMMM!!!!");
 				break;
 			}
 			//
+			//MonoBehaviour.print("Play:"+Iteration);
 			Scenario[Iteration].Play();
 		}
 		//print ("iteration:"+Iteration);
@@ -165,6 +173,7 @@ public class Recorder : MonoBehaviour {
 		current_list.function = function;
 		current_list.state = _state;
 		current_list.WithoutPause = withoutPause;
+		current_list.Pause = PauseTime;
 		Scenario.Insert(Scenario.Count,current_list);
 		current_list = null;
 	}
@@ -176,6 +185,7 @@ public class Recorder : MonoBehaviour {
 		current_list.vertex = vertex;
 		current_list.color = color;
 		current_list.WithoutPause = withoutPause;
+		current_list.Pause = PauseTime;
 		Scenario.Insert(Scenario.Count,current_list);
 		current_list = null;
 	}
@@ -285,15 +295,9 @@ public class Recorder : MonoBehaviour {
 			return;
 		if (Iteration <= -1)
 			Iteration = 0;
-		if (isTimetoPlay)
-		{
-			for(int i=0;i<Speed;i++)
-				StartCoroutine ("_Play");
-		}
-		else
-		{
-			isTimetoPlay=true;
-		}
+		isTimetoPlay = true;
+		for(int i=0;i<Speed;i++)
+			StartCoroutine ("_Play");
 	}
 	public void Pause()
 	{
@@ -326,6 +330,7 @@ public class Recorder : MonoBehaviour {
 	}
 	public void toBegin()
 	{
+		Pause ();
 		if (Iteration <= -1)
 			return;
 		if (Iteration >= Scenario.Count)
@@ -337,11 +342,17 @@ public class Recorder : MonoBehaviour {
 		for(;Iteration>=0;Iteration--)
 		{
 			Scenario[Iteration].backPlay();
+			if(Scenario[Iteration].Pause)
+			{
+				Iteration--;
+				break;
+			}
 		}
 
 	}
 	public void toEnd()
-	{
+ 	{
+		Pause ();
 		if (Iteration <= -1)
 			Iteration = 0;
 		if(Iteration==Scenario.Count)
@@ -350,6 +361,11 @@ public class Recorder : MonoBehaviour {
 		}
 		for(;Iteration<Scenario.Count;Iteration++)
 		{
+			if(Scenario[Iteration].Pause)
+			{
+				Iteration++;
+				break;
+			}
 			Scenario[Iteration].Play();
 		}
 	}
@@ -402,6 +418,10 @@ public class Recorder : MonoBehaviour {
 		/*if (state != State_of_Recorder.Create)
 			return;*/
 		withoutPause = b;
+	}
+	public void setPause(bool b)
+	{
+		PauseTime = b;
 	}
 	public void setSpeed(float s)
 	{

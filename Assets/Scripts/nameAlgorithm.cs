@@ -20,6 +20,7 @@ public struct Colors_For_Algorithm
 	public Colors CoastLine;
 	public Colors SweepLine;
 	public Colors VoronoiEdge;
+	public Colors DeloneEdge;
 }
 [System.Serializable]
 public class RectScene
@@ -56,6 +57,12 @@ public struct Option
 	public float Epcilon_for_Point_event;
 	public bool FullBuild;
 	public float speedOfAlgorightm;
+	public bool BuildParabols;
+	public float Epcilon_for_Y;
+	public bool normalizationEvent;
+	[Range(1, 5)]
+	public int LimitOf_reBuild;
+	public Vector3 GhostVertex;
 }
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
@@ -91,7 +98,7 @@ public class nameAlgorithm : MonoBehaviour {
 
 		Fortune_.Event.NA = this;
 		VoronoiEdge.NA = this;
-
+		VoronoiVertex.NA = this;
 		Fortune_.Function.isReverse = OPTIONS.isRevertes;
 	}
 	public void  Start_Algoritghm()//Vertex StartVertex)
@@ -114,33 +121,28 @@ public class nameAlgorithm : MonoBehaviour {
 	public void Set()
 	{
 		float index = GetComponent<UnityEngine.UI.Scrollbar> ().value;
-		if (index < 0.1666666f) 
+		if (index < 0.2f) 
 		{
 			text_name.text="Fortune";
 			state=_NameAlgorithm.Fortune;
 			algo=Fortune_algorithm;
 			return;
 		}
-		if(index<0.33333333333333333333333333333334f)
-		{text_name.text="Kyle Kirkpatrick";
-			state=_NameAlgorithm.Kyle_Kirkpatrick;
-			return;
-		}
-		if(index<0.5f)
+		if(index<0.4f)
 		{
 			text_name.text="Kyle Kirkpatrick";
 			state=_NameAlgorithm.Kyle_Kirkpatrick;
 			algo=Kyle_Kirkpatrick;
 			return;
 		}
-		if(index<0.66666666666666666666666666666666f)
+		if(index<0.6f)
 		{
 			text_name.text="Andrew Edwin";
 			state=_NameAlgorithm.Andrew_Edwin;
 			algo=Andrew_Edwin;
 			return;
 		}
-		if(index<0.833333333333333333333333333333333f)
+		if(index<0.8f)
 		{
 			text_name.text="Graham ";
 			state=_NameAlgorithm.Graham ;
@@ -255,7 +257,8 @@ public class nameAlgorithm : MonoBehaviour {
 	public delegate void reBuild(float y);
 	public delegate void Build ();
 	public event reBuild re_build;
-	public event Build build;
+	public event Build buildVoronoi;
+	public event Build buildDelone;
 	public event Build destroy;
 
 	public float line_y = 0.05f;
@@ -275,7 +278,8 @@ public class nameAlgorithm : MonoBehaviour {
 		if(ev.Y>cur_Y)
 		{
 			//MonoBehaviour.print("ev.Y > current Y");
-			//return;
+			if(OPTIONS.normalizationEvent)
+				return;
 		}
 		if (list_of_vertexEvent.Count == 0) 
 		{
@@ -317,7 +321,7 @@ public class nameAlgorithm : MonoBehaviour {
 		if(ev.Y>cur_Y)
 		{
 			//MonoBehaviour.print("ev.Y > current Y");
-			//return;
+			return;
 		}
 		if (list_of_Event.Count == 0) 
 		{
@@ -345,6 +349,13 @@ public class nameAlgorithm : MonoBehaviour {
 	}
 	public IEnumerator Fortune_algorithm ()
 	{
+		buildDelone = null;
+		buildVoronoi = null;
+		re_build = null;
+		destroy = null;
+		vertex_for_test = contr.Add (OPTIONS.GhostVertex);
+		vertex_for_test.setColor (1);
+		vertex_for_test.Index = -365;
 		Line Sweep= addLine (new Vector3 (-lenght_of_SweepLine/2, 300), new Vector3 (lenght_of_SweepLine/2, 300), State_of_Line.Flesh);
 		Sweep.setColor (COLORS.SweepLine.start, COLORS.SweepLine.end);
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
@@ -383,7 +394,7 @@ public class nameAlgorithm : MonoBehaviour {
 				{
 					record.setWithoutPause(true);
 					re_build(cur_Y);
-					build();
+					buildVoronoi();
 					record.setWithoutPause(false);
 				}
 				yield return new WaitForSeconds(0.0f);
@@ -403,7 +414,7 @@ public class nameAlgorithm : MonoBehaviour {
 
 				siteE=(Fortune_.Site_Event) ev;
 				//MonoBehaviour.print("Site_Evenet:"+siteE.Y);
-				BTree.Add(siteE,ev.Y-0.05f);
+				BTree.Add(siteE,ev.Y);
 
 				break;
 				//===============================================
@@ -430,11 +441,11 @@ public class nameAlgorithm : MonoBehaviour {
 			{
 				re_build(ev.Y-0.05f);
 				lastBuild=ev.Y-0.05f;
-				BTree.Test ();
+				//BTree.Test ();
 				//MonoBehaviour.print("=================build===============");
-				if (build != null)
+				if (buildVoronoi != null)
 				{
-					build ();
+					buildVoronoi ();
 				}
 				record.setWithoutPause(false);
 			}
@@ -451,12 +462,17 @@ public class nameAlgorithm : MonoBehaviour {
 			re_build(lastBuild);
 			BTree.Test ();
 			MonoBehaviour.print("=================The=Last=Build=============");
-			if (build != null)
+			if (buildVoronoi != null)
 			{
-				build ();
+				buildVoronoi ();
 			}
 			record.setWithoutPause(false);
 		}
+		record.setPause (true);
+		addLine (Sweep, State_of_Line.Flesh_End);
+		record.setPause (false);
+		if (buildDelone != null)
+			buildDelone ();
 		//BTree.Test ();
 		//
 		if (destroy != null)

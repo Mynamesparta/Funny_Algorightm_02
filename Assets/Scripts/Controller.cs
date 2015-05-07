@@ -112,6 +112,7 @@ public class Controller : MonoBehaviour {
 		{
 			state=State_of_Controller.Edit;
 			SCRIPTS.recorder.toBegin();
+			SCRIPTS.recorder.toBegin();
 			SCRIPTS.recorder.Pause();
 			Delete_vertex(SCRIPTS.algorightm.vertex_for_test);
 			_canvas.TimeToRecorder(false);

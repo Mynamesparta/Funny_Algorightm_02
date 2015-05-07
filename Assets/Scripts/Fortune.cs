@@ -154,6 +154,7 @@ namespace Fortune_
 			if(D<0)
 			{
 				//MonoBehaviour.print("Something wrong D<0 hm......");
+				//currentPoint=getfirstPosofVoronoiEdge(left.getVector(),right.getVector());
 				return float.NaN;
 			}
 			D = (float)Math.Sqrt (D);
@@ -161,7 +162,7 @@ namespace Fortune_
 			x_2 = (-cFun [1] - D) / (2*cFun [0]);
 			return((left.Y>right.Y?x_2<x_1:x_1<x_2) ? x_2 : x_1);
 		}
-		//public static float 
+		//public static Vector3 currentPoint; 
 		public static Vector3 getCenter(Vector3 a,Vector3 b, Vector3 c)
 		{
 			Vector3 vec1=b-a, vec2=c-b;
@@ -212,6 +213,19 @@ namespace Fortune_
 				return false;
 			//MonoBehaviour.print ("Y:" + y);
 			return true;
+		}
+		public static Vector3 getfirstPosofVoronoiEdge(Vector3 a,Vector3 b)
+		{
+			Vector3 vec = b - a;
+			Vector3 normal = new Vector3 ();
+			normal.x = vec.y;
+			normal.y = -vec.x;
+			if (normal.y < 0)
+				normal *= -1;
+			Vector3 begin = (b + a) / 2;
+			begin += normal * 100;
+			//MonoBehaviour.print (begin.ToString () + "&" + normal.ToString ());
+			return begin;
 		}
 	}
 	//---------------------------------------------------------------------------------------------------------------------------------------
@@ -323,7 +337,9 @@ namespace Fortune_
 	public class VoronoiEdge
 	{
 		bool isTimeToEnd=false;
-		Line line;
+		Line VoronoiLine;
+		Line DeloneLine;
+		Vertex ver_1,ver_2;
 		public VoronoiVertex first,second;
 		public static nameAlgorithm NA;
 		public static Controller contr;
@@ -331,14 +347,23 @@ namespace Fortune_
 		{
 			first = new VoronoiVertex (this,true);
 			second = new VoronoiVertex (this,false);
-			NA.build += Build;
-			line = contr.createLine ();
-			line.setColor (NA.COLORS.VoronoiEdge.start, NA.COLORS.VoronoiEdge.end);
-			NA.addEdge (this);
+		}
+		public void setVertex(Vertex ver1,Vertex ver2)
+		{
+			ver_1 = ver1;
+			ver_2 = ver2;
+			if(ver_1.Index!=-365&&ver_2.Index!=-365)
+			{
+				NA.buildVoronoi += Build;
+				NA.buildDelone 	+= BuildDelenoEdge;
+				VoronoiLine = contr.createLine ();
+				VoronoiLine.setColor (NA.COLORS.VoronoiEdge.start, NA.COLORS.VoronoiEdge.end);
+				NA.addEdge (this);
+			}
 		}
 		public void _Awake()
 		{
-			line.awake -= _Awake;
+			VoronoiLine.awake -= _Awake;
 		}
 		/*/
 		public Vector3 first
@@ -353,7 +378,7 @@ namespace Fortune_
 		public void endSearch()
 		{
 			if (isTimeToEnd)
-				NA.build -= Build;
+				NA.buildVoronoi -= Build;
 			else
 				isTimeToEnd = true;
 		}
@@ -363,9 +388,27 @@ namespace Fortune_
 			//MonoBehaviour.print (first.postion.ToString () + "->" + second.postion.ToString ());
 			if (NA.OPTIONS.VoloronoiEdge) 
 			{
+				//first.Check();
+				//second.Check();
 				if(!float.IsInfinity(first.position.y)&&!float.IsInfinity(second.position.y))
 					if(first.position!=Vector3.zero&&second.position!=Vector3.zero)
-						NA.addLine (line, State_of_Line.Flesh, first.position, second.position);
+				{
+						first.reBuildTime();
+						second.reBuildTime();
+						NA.addLine (VoronoiLine, State_of_Line.Flesh, first.position, second.position);
+				}
+			}
+		}
+		public void BuildDelenoEdge()
+		{
+			if(DeloneLine==null)
+			{
+				DeloneLine=NA.addLine (ver_1, ver_2, State_of_Line.Flesh);
+				DeloneLine.setColor(NA.COLORS.DeloneEdge.start,NA.COLORS.DeloneEdge.end);
+			}
+			else
+			{
+				NA.addLine(DeloneLine,State_of_Line.Flesh,ver_1,ver_2);
 			}
 		}
 		public void Clear(bool b)
@@ -386,16 +429,32 @@ namespace Fortune_
 		bool isFirst;
 		bool isEditable=true;
 		Vector3 _position;
+		int Limit;
+		public static nameAlgorithm NA;
 		public Vector3 position
 		{
 			get{ return _position;}
-			set{ _position = (isEditable ? value : _position);}
+			set
+			{ 
+				if(isEditable&&_position!=value)
+				{
+					_position =  value;
+					Limit=NA.OPTIONS.LimitOf_reBuild;
+				}
+			}
+		}
+		public void reBuildTime()
+		{
+			Limit--;
+			if (Limit == 0)
+				endSearch ();
 		}
 		public VoronoiVertex(VoronoiEdge edge,bool b)
 		{
 			parent = edge;
 			isFirst = b;
 			_position = new Vector3(-1000,-1000,-1000);
+			Limit = NA.OPTIONS.LimitOf_reBuild;
 		}
 
 		public void endSearch(Vector3 vec)
@@ -407,6 +466,11 @@ namespace Fortune_
 		public void Clear()
 		{
 			parent.Clear (isFirst);
+		}
+		public void Check()
+		{
+			if (position.y > 500)
+				endSearch ();
 		}
 		public void endSearch()
 		{

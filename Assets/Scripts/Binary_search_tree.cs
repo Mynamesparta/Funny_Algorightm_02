@@ -147,8 +147,8 @@ namespace Binary_Tree
 				//parent.printNeighbourVertex ();
 			}
 			//text += parent.coner.right_data.I.ToString ();
-			//MonoBehaviour.print ("train:"+text);
-			//MonoBehaviour.print ("train_2:" + text_2);
+			MonoBehaviour.print ("train:"+text);
+			MonoBehaviour.print ("train_2:" + text_2);
 		}
 		bool isFirstAdd=true;
 		public void Add(Fortune_.Site_Event data,float _y)
@@ -181,7 +181,7 @@ namespace Binary_Tree
 						//MonoBehaviour.print(parent.left.getLimit(_y)+"->"+Key+"->"+parent.right.getLimit(_y));
 						//MonoBehaviour.print(parent.left.getLimit(_y)+"->"+parent.getLimit(_y)+"->"+parent.right.getLimit(_y));
 						//parent.printNeighbourVertex();
-						//MonoBehaviour.print("parent:"+parent.getLimit(_y));
+						//MonoBehaviour.print("parent:"+parent.getLimit(_y)+" Key:"+Key);
 						if(Key<parent.getLimit(_y))
 						{
 							parent=parent.left;
@@ -200,6 +200,14 @@ namespace Binary_Tree
 						Branch grand_parent=parent.parent;
 						bool isLeft=Key<parent.getLimit(_y);
 						float leftLimit=float.NegativeInfinity,rightLimit=float.PositiveInfinity;
+						if(isLeft)
+						{
+							//MonoBehaviour.print("Left");
+						}
+						else
+						{
+							//MonoBehaviour.print("Right");
+						}
 						if(grand_parent!=null)
 						{
 							if(isLeft)
@@ -222,6 +230,8 @@ namespace Binary_Tree
 						Branch branch;
 						if(true)
 						{
+							Vertex ver_1=parent.data.vertex;
+							Vertex ver_2=data.vertex;
 							branch=new Branch();
 							branch.left=new Branch();
 							branch.right=new Branch();
@@ -262,6 +272,7 @@ namespace Binary_Tree
 									grand_parent.left_neighbour=parent;
 									grand_parent.coner.leftBranch=parent.right;
 									parent.right_neighbour=grand_parent;
+									//MonoBehaviour.print("Left");
 								}
 								else
 								{
@@ -274,6 +285,7 @@ namespace Binary_Tree
 									grand_parent.right_neighbour=branch;
 									grand_parent.coner.rightBranch=branch.left;
 									branch.left_neighbour=grand_parent;
+									//MonoBehaviour.print("Right");
 								}
 							}
 							//MonoBehaviour.print(leftLimit+"->"+Key+"->"+rightLimit);
@@ -302,6 +314,36 @@ namespace Binary_Tree
 							VoronoiEdge edge =new VoronoiEdge();
 							branch.setVoronoiVertex(edge.first,_y);
 							parent.setVoronoiVertex(edge.second,_y);
+							if(Math.Abs(branch.left.data.Y-branch.right.data.Y)<NA.OPTIONS.Epcilon_for_Y
+							   &&float.IsNaN(branch.middle)&&
+							   float.IsNaN(parent.middle))
+							{
+								if(isLeft)
+								{
+									branch.vVertex.position=Fortune_.Function.getfirstPosofVoronoiEdge(branch.left.data.getVector(),
+									                                                                   branch.right.data.getVector());
+									branch.vVertex.endSearch();
+									Delete(branch.left,_y,true);
+									if(branch.left_neighbour!=null)
+									{
+										//addEvent(branch.left_neighbour.coner.leftBranch);
+									}
+								}
+								else
+								{
+									parent.vVertex.position=Fortune_.Function.getfirstPosofVoronoiEdge(branch.left.data.getVector(),
+									                                                                   branch.right.data.getVector());
+									parent.vVertex.endSearch();
+									Delete(parent.right,_y,true);
+									if(parent.right_neighbour!=null)
+									{
+										//addEvent(parent.right_neighbour.coner.rightBranch);
+									}
+								}
+								//addEvent(branch.right);
+							}
+
+							edge.setVertex(ver_1,ver_2);
 							NA.LoadPointEvent();
 							return;
 						}
@@ -355,7 +397,7 @@ namespace Binary_Tree
 			}
 		}
 		
-		public bool Delete(Branch branch,float _y)
+		public bool Delete(Branch branch,float _y,bool delete=false)
 		{
 			if (branch == null)
 				return false;
@@ -393,7 +435,7 @@ namespace Binary_Tree
 			parent.right_neighbour.reBuild (_y);
 			float d = branch.getDistance_of_Arc ();
 			//MonoBehaviour.print("YOU CANT DELETE ME MYXAXAXAXAXAXAXAXAXA(distance:"+d+")");
-			if(float.IsNaN(d)||d>NA.OPTIONS.Epcilon_for_Point_event)
+			if(!delete&&(float.IsNaN(d)||d>NA.OPTIONS.Epcilon_for_Point_event))
 			{
 				//MonoBehaviour.print("MYXAXAXAXAXAXAXAXAXA");
 				return false;
@@ -420,19 +462,25 @@ namespace Binary_Tree
 			new_branch.parent = grand_parent;
 
 			new_branch.isLeftBranch = parent.isLeftBranch;
-
+			Vertex ver_1, ver_2;
 			if(branch.isLeftBranch)
 			{
 				parent.left_neighbour.coner.rightBranch=parent.coner.rightBranch;
+				ver_1=parent.left_neighbour.coner.leftBranch.data.vertex;
+				ver_2=parent.left_neighbour.coner.rightBranch.data.vertex;
 			}
 			else
 			{
 				parent.right_neighbour.coner.leftBranch=parent.coner.leftBranch;
+				ver_1=parent.right_neighbour.coner.leftBranch.data.vertex;
+				ver_2=parent.right_neighbour.coner.rightBranch.data.vertex;
 			}
+			//MonoBehaviour.print(ver_1.getPos().ToString()+ver_2.getPos().ToString());
 			parent.left_neighbour.right_neighbour=parent.right_neighbour;
 			parent.right_neighbour.left_neighbour=parent.left_neighbour;
 
 			VoronoiEdge edge = new VoronoiEdge ();
+			edge.setVertex (ver_1, ver_2);
 			Vector3 vec=new Vector3(parent.middle,branch.data.fun(parent.middle));
 			edge.first.position = vec;
 			//edge.first.endSearch ();
@@ -551,7 +599,7 @@ namespace Binary_Tree
 		public Branch()
 		{
 			NA.re_build += reBuild;
-			NA.build += Build;
+			NA.buildVoronoi += Build;
 			NA.destroy += Destroy;
 			coner = new Coner ();
 		}
@@ -578,14 +626,14 @@ namespace Binary_Tree
 					vVertex.endSearch ();
 				}
 				vVertex = ver;
-				vVertex.Clear();
+				//vVertex.Clear();
 			}
 			//MonoBehaviour.print ("====================================");
 		}
 		public void destroy()
 		{
 			NA.re_build -= reBuild;
-			NA.build -= Build;
+			NA.buildVoronoi -= Build;
 			NA.destroy -= Destroy;
 			if(coner.leftParabola!=null)
 				coner.leftParabola.Clear ();
@@ -601,7 +649,7 @@ namespace Binary_Tree
 		public void Destroy()
 		{
 			NA.re_build -= reBuild;
-			NA.build -= Build;
+			NA.buildVoronoi -= Build;
 			NA.destroy -= Destroy;
 		}
 		public void reBuild(float _y)
@@ -622,19 +670,34 @@ namespace Binary_Tree
 			//MonoBehaviour.print ("its norm");
 			bool leftb = Fortune_.Function.buildParabola ( coner.left_data, _y);
 			bool rightb = Fortune_.Function.buildParabola ( coner.right_data, _y);
+			
+			if(NA.OPTIONS.BuildParabols)
+			{
+				NA.addParabola(coner.left_data.fun,State_of_Line.Flesh,new RectScene());
+				NA.addParabola(coner.right_data.fun,State_of_Line.Flesh,new RectScene());
+				return;
+			}
 			isCheked = !( leftb&&rightb);
 			//MonoBehaviour.print ("isCheked:"+isCheked.ToString());
 			if (true||!isCheked) 
 			{
 				middle = Fortune_.Function.getIntersection (coner.left_data, coner.right_data);
-				if(!float.IsNaN(middle)&&vVertex!=null)
+				//MonoBehaviour.print ("before:"+middle);
+				//MonoBehaviour.print ("after:"+middle);
+				if(vVertex!=null)
 				{
-
-					vVertex.position=new Vector3(middle,coner.left_data.fun(middle));
-					if(false&&middle<RectScene.begin_minW)
+					if(float.IsNaN(middle))
 					{
-						vVertex.endSearch();
-						vVertex=null;
+						Fortune_.Function.getfirstPosofVoronoiEdge(coner.left_data.getVector(),coner.right_data.getVector());
+					}
+					else
+					{
+						vVertex.position=new Vector3(middle,coner.left_data.fun(middle));
+						if(false&&middle<RectScene.begin_minW)
+						{
+							vVertex.endSearch();
+							vVertex=null;
+						}
 					}
 				}
 				 //MonoBehaviour.print("search midle:"+middle);
