@@ -110,6 +110,7 @@ public class Recorder : MonoBehaviour {
 	IEnumerator _Play()
 	{
 		//print ("Test");
+		float time = Time.deltaTime;
 		for(;Iteration<Scenario.Count;Iteration++)
 		{
 			if(Scenario[Iteration].Pause)
@@ -119,9 +120,9 @@ public class Recorder : MonoBehaviour {
 			if(!Scenario[Iteration].WithoutPause)
 			{
 				if(Scenario[Iteration].isPoint())
-					yield return new WaitForSeconds(PAUSE_TIME.ForPoint);
+					yield return new WaitForSeconds(PAUSE_TIME.ForPoint+time-Time.deltaTime);
 				else
-					yield return new WaitForSeconds(lineSpeed);
+					yield return new WaitForSeconds(lineSpeed+time-Time.deltaTime);
 			}
 			//
 			if(!isTimetoPlay)
@@ -295,6 +296,7 @@ public class Recorder : MonoBehaviour {
 			return;
 		if (Iteration <= -1)
 			Iteration = 0;
+		StopAllCoroutines ();
 		isTimetoPlay = true;
 		for(int i=0;i<Speed;i++)
 			StartCoroutine ("_Play");

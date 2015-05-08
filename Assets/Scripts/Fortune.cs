@@ -352,7 +352,7 @@ namespace Fortune_
 		{
 			ver_1 = ver1;
 			ver_2 = ver2;
-			if(ver_1.Index!=-365&&ver_2.Index!=-365)
+			if(ver_1.Index>=0&&ver_2.Index>=0)
 			{
 				NA.buildVoronoi += Build;
 				NA.buildDelone 	+= BuildDelenoEdge;

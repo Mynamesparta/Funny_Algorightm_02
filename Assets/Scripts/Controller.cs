@@ -115,6 +115,14 @@ public class Controller : MonoBehaviour {
 			SCRIPTS.recorder.toBegin();
 			SCRIPTS.recorder.Pause();
 			Delete_vertex(SCRIPTS.algorightm.vertex_for_test);
+			if(SCRIPTS.algorightm.list_of_Ghost_vertex!=null)
+			{
+				for(int i=0;i<SCRIPTS.algorightm.list_of_Ghost_vertex.Count;i++)
+				{
+					Delete_vertex(SCRIPTS.algorightm.list_of_Ghost_vertex[i]);
+				}
+				SCRIPTS.algorightm.list_of_Ghost_vertex.Clear();
+			}
 			_canvas.TimeToRecorder(false);
 			_canvas.inScene(name_of_Button.NameAlgorithm,true);
 			_canvas.inScene(name_of_Button.FileList,true);

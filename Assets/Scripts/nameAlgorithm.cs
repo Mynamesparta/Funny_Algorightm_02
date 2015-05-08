@@ -48,6 +48,7 @@ public class RectScene
 public struct Option
 {
 	public bool FullBeachLine;
+	public bool Clear_before_reBuild;
 	public bool isRevertes;
 	public bool VoloronoiEdge;
 	public bool allEvent;
@@ -62,7 +63,8 @@ public struct Option
 	public bool normalizationEvent;
 	[Range(1, 5)]
 	public int LimitOf_reBuild;
-	public Vector3 GhostVertex;
+	public Vector3[] GhostVertex;
+	public bool PrintTime;
 }
 public class nameAlgorithm : MonoBehaviour {
 	public Controller contr;
@@ -74,6 +76,7 @@ public class nameAlgorithm : MonoBehaviour {
 	public float delta_X=1f;
 	[System.NonSerialized]
 	public Vertex vertex_for_test;
+	public List<Vertex> list_of_Ghost_vertex;
 	public Option OPTIONS;
 	//public bool FullBeachLine=true;
 
@@ -277,7 +280,8 @@ public class nameAlgorithm : MonoBehaviour {
 		}
 		if(ev.Y>cur_Y)
 		{
-			//MonoBehaviour.print("ev.Y > current Y");
+			if(OPTIONS.PrintTime)
+				MonoBehaviour.print("ev.Y > current Y");
 			if(OPTIONS.normalizationEvent)
 				return;
 		}
@@ -353,9 +357,14 @@ public class nameAlgorithm : MonoBehaviour {
 		buildVoronoi = null;
 		re_build = null;
 		destroy = null;
-		vertex_for_test = contr.Add (OPTIONS.GhostVertex);
-		vertex_for_test.setColor (1);
-		vertex_for_test.Index = -365;
+		list_of_Ghost_vertex=new List<Vertex>();
+		Vertex ghost_vertex;
+		for(int i=0;i<OPTIONS.GhostVertex.Length;i++)
+		{
+			ghost_vertex=contr.Add(OPTIONS.GhostVertex[i]);
+			ghost_vertex.Index=-i-1;
+			list_of_Ghost_vertex.Add(ghost_vertex );
+		}
 		Line Sweep= addLine (new Vector3 (-lenght_of_SweepLine/2, 300), new Vector3 (lenght_of_SweepLine/2, 300), State_of_Line.Flesh);
 		Sweep.setColor (COLORS.SweepLine.start, COLORS.SweepLine.end);
 		Vertex[] vertexs=contr.getVertexs ().ToArray();
@@ -382,7 +391,9 @@ public class nameAlgorithm : MonoBehaviour {
 		cur_Y = 200;
 		while(list_of_Event.Count>0) 
 		{
-			//MonoBehaviour.print("=================before="+Index_of_Step+"==============");
+			
+			if(OPTIONS.PrintTime)
+				MonoBehaviour.print("=================before="+Index_of_Step+"==============");
 			isTimetoReBuild=true;
 			Index_of_Step++;
 			Fortune_.Event ev=list_of_Event[0];
@@ -410,10 +421,12 @@ public class nameAlgorithm : MonoBehaviour {
 			case Fortune_.EVENT.Site:
 			{
 				//====================Site=Event================
-				//BTree.Test ();
+				if(OPTIONS.PrintTime)
+					BTree.Test ();
 
 				siteE=(Fortune_.Site_Event) ev;
-				//MonoBehaviour.print("Site_Evenet:"+siteE.Y);
+				if(OPTIONS.PrintTime)
+					MonoBehaviour.print("Site_Evenet:"+siteE.Y);
 				BTree.Add(siteE,ev.Y);
 
 				break;
@@ -422,27 +435,35 @@ public class nameAlgorithm : MonoBehaviour {
 			case Fortune_.EVENT.Vertex:
 			{
 				//============================Vertex=Event========
-				//BTree.Test ();
+				if(OPTIONS.PrintTime)
+					BTree.Test ();
 
 				vertexE=(Fortune_.Vertex_Event)ev;
-				//MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
+				if(OPTIONS.PrintTime)
+					MonoBehaviour.print("Vertex_Event:"+vertexE.Y);
 				if(OPTIONS.Delete)
 					isTimetoReBuild=BTree.Delete(vertexE._branch,ev.Y);
-
-				//BTree.Test ();
+				if(OPTIONS.PrintTime)
+					BTree.Test ();
 				break;
 				//================================================
 			}
 			}
-			//BTree.Test ();
-			//MonoBehaviour.print("=================after===============");
-			//MonoBehaviour.print("=================rebuild=============");
+			if(OPTIONS.PrintTime)
+			{
+				BTree.Test ();
+				MonoBehaviour.print("=================after===============");
+				MonoBehaviour.print("=================rebuild=============");
+			}
 			if(isTimetoReBuild)
 			{
 				re_build(ev.Y-0.05f);
 				lastBuild=ev.Y-0.05f;
-				//BTree.Test ();
-				//MonoBehaviour.print("=================build===============");
+				if(OPTIONS.PrintTime)
+				{
+					BTree.Test ();
+					MonoBehaviour.print("=================build===============");
+				}
 				if (buildVoronoi != null)
 				{
 					buildVoronoi ();

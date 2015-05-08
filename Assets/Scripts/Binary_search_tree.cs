@@ -314,7 +314,7 @@ namespace Binary_Tree
 							VoronoiEdge edge =new VoronoiEdge();
 							branch.setVoronoiVertex(edge.first,_y);
 							parent.setVoronoiVertex(edge.second,_y);
-							if(Math.Abs(branch.left.data.Y-branch.right.data.Y)<NA.OPTIONS.Epcilon_for_Y
+							if(false&&Math.Abs(branch.left.data.Y-branch.right.data.Y)<NA.OPTIONS.Epcilon_for_Y
 							   &&float.IsNaN(branch.middle)&&
 							   float.IsNaN(parent.middle))
 							{
@@ -391,7 +391,8 @@ namespace Binary_Tree
 			{
 				ev=new Fortune_.Vertex_Event(branch,y);
 				//NA.deletePointEvent(ev);
-				//MonoBehaviour.print ("_Y:" + y);
+				if(NA.OPTIONS.PrintTime)
+					MonoBehaviour.print ("_Y:" + y);
 				branch._event=ev;
 				NA.AddPointEvent(ev);
 			}
@@ -434,13 +435,16 @@ namespace Binary_Tree
 			parent.left_neighbour.reBuild(_y);
 			parent.right_neighbour.reBuild (_y);
 			float d = branch.getDistance_of_Arc ();
-			//MonoBehaviour.print("YOU CANT DELETE ME MYXAXAXAXAXAXAXAXAXA(distance:"+d+")");
-			if(!delete&&(float.IsNaN(d)||d>NA.OPTIONS.Epcilon_for_Point_event))
+			if(NA.OPTIONS.PrintTime)
+				MonoBehaviour.print("YOU CANT DELETE ME MYXAXAXAXAXAXAXAXAXA(distance:"+d+")+ Index:"+branch.data.vertex.Index);
+			if(branch.data.vertex.Index>=0&&!delete&&(float.IsNaN(d)||d>NA.OPTIONS.Epcilon_for_Point_event))
 			{
-				//MonoBehaviour.print("MYXAXAXAXAXAXAXAXAXA");
+				if(NA.OPTIONS.PrintTime)
+					MonoBehaviour.print("MYXAXAXAXAXAXAXAXAXA");
 				return false;
 			}
-			//MonoBehaviour.print ("okay :(");
+			if(NA.OPTIONS.PrintTime)
+				MonoBehaviour.print ("okay :(");
 			Branch new_branch;
 			if(branch.isLeftBranch)
 			{
@@ -711,10 +715,14 @@ namespace Binary_Tree
 			//MonoBehaviour.print ("build time");
 			if (state == State_of_Branch.Site)
 				return;
-			if(coner.leftParabola!=null)
-				coner.leftParabola.Clear();
-			if(coner.rightParabola!=null)
-				coner.rightParabola.Clear();
+			if (NA.OPTIONS.Clear_before_reBuild) 
+			{
+				MonoBehaviour.print("Clear");
+				if (coner.leftParabola != null)
+					coner.leftParabola.Clear ();
+				if (coner.rightParabola != null)
+					coner.rightParabola.Clear ();
+			}
 			//
 			//NA.addParabola (coner.left_data.fun, State_of_Line.Flesh, new RectScene());
 			//NA.addParabola (coner.right_data.fun, State_of_Line.Flesh, new RectScene());
